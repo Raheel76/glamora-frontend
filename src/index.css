@@ -1,21 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 /* ------------- */
 html,
 body,
 #root {
   height: 100%;
 }
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   font-family: "Roboto", serif;
 }
+
 /* ----------------------------- */
-.error-text{
+.error-text {
   color: red;
+}
+
+.ant-otp-input {
+  background-color: #eff1f1;
+}
+
+.ant-btn-variant-outlined:not(:disabled):not(.ant-btn-disabled):active {
+  background-color: #42A4D8;
 }

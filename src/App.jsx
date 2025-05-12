@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 import { Home, UserLayout } from "./client";
-import { ForgotPassword, Login, Signup } from "./auth";
+import { ForgotPassword, Login, ResetPassword, Signup, VerifyOtp } from "./auth";
 import { AdminLayout, Dashboard } from "./admin";
 
 import { ToastContainer } from "react-toastify";
@@ -11,22 +11,31 @@ function App() {
     {
       path: "/auth/signup",
       element: (
-
         <Signup />
       ),
     },
     {
       path: "/auth/login",
       element: (
-
         <Login />
       ),
     },
     {
       path: "/auth/forgot",
       element: (
-
         <ForgotPassword />
+      ),
+    },
+    {
+      path: "/auth/otp",
+      element: (
+        <VerifyOtp />
+      ),
+    },
+    {
+      path: "/auth/reset",
+      element: (
+        <ResetPassword />
       ),
     },
     // -----------user layout-----------

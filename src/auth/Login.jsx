@@ -122,7 +122,7 @@ const Login = () => {
                 </div>
                 <Button
                   htmlType="submit"
-                  className="text-base font-medium w-full h-12 bg-[#44b1ec] border-none hover:!bg-[#42a4d8] !text-white "
+                  className="text-base rounded-xl font-medium w-full h-10 bg-[#44b1ec] border-none hover:!bg-[#42a4d8] !text-white "
                   disabled={loading}
                 >
                   {loading ? <Spin /> : "Log in"}
