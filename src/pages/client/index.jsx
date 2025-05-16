@@ -1,5 +1,5 @@
 
 import UserLayout from "./Layout"
-import Home from "./pages/Home"
+import Home from "./Home"
 
 export { UserLayout, Home} 

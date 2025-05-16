@@ -1,0 +1,54 @@
+import { Button } from 'antd'
+import React from 'react'
+import { Link, NavLink, useNavigate } from 'react-router'
+
+const Sidebar = () => {
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        try {
+            await axios.post('http://localhost:5000/api/auth/logout', {}, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+            });
+            localStorage.removeItem('token');
+            toast.success('Logged out successfully');
+            navigate('/auth/login');
+
+        } catch (error) {
+            toast.error('Error during logout');
+            console.log(error);
+        }
+    };
+    return (
+        <>
+            <div className="flex flex-col w-[200px] py-4 justify-between bg-[#7adeff] min-h-screen ">
+                <div>
+                    <div className="flex items-center justify-center">
+                        <Link to='' className="w-[160px] h-14">
+                            <img src="/assets/header logo.png" alt="header logo" className='size-full' />
+                        </Link>
+                    </div>
+                    {/* --------nav links--------- */}
+                    <div className="flex gap-3 my-6 nav-tab mx-3 flex-col">
+                        <NavLink end to='/admin' className="py-2  px-4 bg-white flex items-center justify-between rounded-md shadow-md">
+                            <span className=' text-[14px] font-medium '>Dashboard</span>
+                           <iconify-icon icon="pajamas:dashboard" className='text-2xl'></iconify-icon>
+                        </NavLink>
+                        <NavLink to='/admin/profile' className="py-2  px-4 bg-white flex items-center justify-between rounded-md shadow-md">
+                            <span className=' text-[14px] font-medium '>Profile</span>
+                           <iconify-icon icon="carbon:user-profile-alt" className='text-2xl'></iconify-icon>
+                        </NavLink>
+                    </div>
+
+                </div>
+                <div className="flex flex-col">
+                    <div className="flex flex-column justify-center items-center text-red-600 cursor-pointer" onClick={handleLogout}>
+                        <iconify-icon icon="line-md:logout" className="text-2xl"></iconify-icon>
+                        <span className="ml-2 font-bold">Log out</span>
+                    </div>                </div>
+            </div>
+        </>
+    )
+}
+
+export default Sidebar

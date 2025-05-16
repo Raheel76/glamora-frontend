@@ -5,4 +5,4 @@ import Signup from "./Signup";
 import VerifyOtp from "./VerifyOtp";
 
 
-export  { Signup, Login, ForgotPassword, VerifyOtp, ResetPassword }
+export { Signup, Login, ForgotPassword, VerifyOtp, ResetPassword }

@@ -97,7 +97,7 @@ const ResetPassword = () => {
         </Col>
         <Col xs={24} md={12}>
           <div className="flex justify-center items-center bg-[#d6d6d6] flex-column h-[100vh]">
-            <div className="border md:w-3/4 xxl:w-[60%] p-6 bg-[#f5f5f5] rounded-2xl shadow-2xl">
+            <div className="border md:w-3/4 xxl:w-[60%] p-6 bg-[#fff] rounded-2xl shadow-2xl">
               <div className="flex justify-center mb-6 text-[#29a9ee] gap-2 items-center">
                 <h6 className="text-center text-2xl mb-0 font-bold">Reset Password</h6>
                 <div className="flex text-[32px] items-center">
@@ -109,7 +109,7 @@ const ResetPassword = () => {
                   <h6 className="font-medium mb-1">New Password</h6>
                   <Input.Password
                     placeholder="Enter new password"
-                    className={`w-full px-3 py-2 rounded-md border bg-[#e6e7e7] border-gray-300 focus:outline-none ${
+                    className={`w-full px-3 py-2 rounded-xl border bg-[#2294ff0a] border-gray-300 focus:outline-none ${
                       errors.password || errors.mismatch ? 'border-red-500' : 'focus:border-blue-600'
                     }`}
                     minLength={4}
@@ -130,7 +130,7 @@ const ResetPassword = () => {
                   <h6 className="font-medium mb-1">Confirm New Password</h6>
                   <Input.Password
                     placeholder="Confirm new password"
-                    className={`w-full px-3 py-2 rounded-md border bg-[#e6e7e7] border-gray-300 focus:outline-none ${
+                    className={`w-full px-3 py-2 rounded-xl border bg-[#2294ff0a] border-gray-300 focus:outline-none ${
                       errors.confirmPassword || errors.mismatch ? 'border-red-500' : 'focus:border-blue-600'
                     }`}
                     minLength={4}
@@ -152,7 +152,7 @@ const ResetPassword = () => {
                 </div>
                 <Button
                   htmlType="submit"
-                  className="text-base rounded-xl font-medium w-full h-10 bg-[#44b1ec] border-none hover:!bg-[#42a4d8] !text-white"
+                  className="text-base rounded-xl font-medium w-full h-10 bg-[#44b1ec]  hover:!bg-[#42a4d8] !text-white"
                   disabled={loading}
                 >
                   {loading ? <Spin /> : "Reset Password"}

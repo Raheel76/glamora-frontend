@@ -1,10 +1,9 @@
 import { Icon } from '@iconify/react/dist/iconify.js'
-import { Button, Col, Row, Spin } from 'antd'
+import { Button, Col, Input, Row, Spin } from 'antd'
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import axios from 'axios'
 import { toast } from 'react-toastify'
-
 
 const Signup = () => {
   const [loading, setLoading] = useState(false);
@@ -92,7 +91,7 @@ const Signup = () => {
         </Col>
         <Col xs={24} md={12}>
           <div className="flex justify-center items-center bg-[#d6d6d6] flex-column h-[100vh]">
-            <div className="border md:w-3/4 xxl:w-[60%]  p-6 bg-[#f5f5f5] rounded-2xl shadow-2xl">
+            <div className="border md:w-3/4 xxl:w-[60%]  p-6 bg-[#fff] rounded-2xl shadow-2xl">
               <div className="flex justify-center mb-6 text-[#29a9ee]  items-center gap-2">
                 <h6 className="text-center text-2xl mb-0 font-bold ">Sign Up</h6>
                 <div className="flex text-[32px]  items-center">
@@ -106,7 +105,7 @@ const Signup = () => {
                     type="text"
                     name="name"
                     placeholder="user name"
-                    className="w-full px-3 py-2 rounded-md border bg-[#e6e7e7] border-gray-300 focus:outline-none focus:border-blue-600"
+                    className="w-full px-3 py-2 rounded-xl border bg-[#2294ff0a] border-gray-300 focus:outline-none focus:border-blue-600"
                     onChange={handleInputChange}
                     value={formData.name}
                   />
@@ -118,7 +117,7 @@ const Signup = () => {
                     type="email"
                     name="email"
                     placeholder="email address"
-                    className="w-full px-3 py-2 rounded-md border bg-[#e6e7e7] border-gray-300 focus:outline-none focus:border-blue-600"
+                    className="w-full px-3 py-2 rounded-xl border bg-[#2294ff0a] border-gray-300 focus:outline-none focus:border-blue-600"
                     onChange={handleInputChange}
                     value={formData.email}
                   />
@@ -126,11 +125,10 @@ const Signup = () => {
                 </div>
                 <div className="mb-6">
                   <h6 className="font-medium mb-1">Password</h6>
-                  <input
-                    type="password"
+                  <Input.Password
                     name="password"
                     placeholder="password"
-                    className="w-full px-3 py-2 rounded-md border border-gray-300 bg-[#e6e7e7] focus:outline-none focus:border-blue-600"
+                    className="w-full px-3 py-2 rounded-xl border border-gray-300 bg-[#2294ff0a] focus:outline-none focus:border-blue-600"
                     onChange={handleInputChange}
                     value={formData.password}
                   />
@@ -141,7 +139,7 @@ const Signup = () => {
                 </div>
                 <Button
                   htmlType="submit"
-                  className="text-base rounded-xl font-medium w-full h-10 bg-[#44b1ec] border-none hover:!bg-[#42a4d8] !text-white "
+                  className="text-base rounded-xl font-medium w-full h-10 bg-[#44b1ec]  hover:!bg-[#42a4d8] !text-white "
                   disabled={loading}
                 >
                   {loading ? <Spin /> : "Sign Up"}

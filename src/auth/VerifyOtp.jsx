@@ -59,7 +59,7 @@ const VerifyOtp = () => {
         <Col xs={24} md={12}>
           <div className="flex justify-center items-center bg-[#d6d6d6] flex-column h-[100vh]">
 
-            <div className="border md:w-3/4 xxl:w-[60%] p-6 bg-[#f5f5f5] rounded-2xl shadow-2xl">
+            <div className="border md:w-3/4 xxl:w-[60%] p-6 bg-[#fff] rounded-2xl shadow-2xl">
               <div className="flex justify-center mb-6 text-[#29a9ee]  items-center ">
                 <h6 className="text-center text-2xl mb-0 font-bold ">Verify OTP</h6>
                 <div className="flex text-[32px]  items-center">
@@ -81,7 +81,7 @@ const VerifyOtp = () => {
 
                 <Button
                   htmlType="submit"
-                  className="text-base rounded-xl font-medium w-full h-10 bg-[#44b1ec] border-none hover:!bg-[#42a4d8] !text-white "
+                  className="text-base rounded-xl font-medium w-full h-10 bg-[#44b1ec]  hover:!bg-[#42a4d8] !text-white "
                   loading={loading}
                 >
                   {loading ? <Spin size="small" /> : 'Verify OTP'}

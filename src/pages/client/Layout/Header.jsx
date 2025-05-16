@@ -1,14 +1,26 @@
 import { Button } from 'antd'
+import axios from 'axios';
 import React from 'react'
 import { Link, useNavigate } from 'react-router'
+import { toast } from 'react-toastify';
 
 const Header = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    navigate('/auth/login')
-  }
+  const handleLogout = async () => {
+    try {
+      await axios.post('http://localhost:5000/api/auth/logout', {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      localStorage.removeItem('token');
+      toast.success('Logged out successfully');
+      navigate('/auth/login');
+      
+    } catch (error) {
+      toast.error('Error during logout');
+      console.log(error);
+    }
+  };
   return (
     <>
       <div className="flex justify-between items-center h-20 px-8 shadow-md bg-[#FADADD] ">
