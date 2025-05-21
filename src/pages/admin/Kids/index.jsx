@@ -1,11 +1,11 @@
 import React from 'react'
 
-const DeleteModal = () => {
+const Kids = () => {
   return (
     <div>
-      
+      Kids
     </div>
   )
 }
 
-export default DeleteModal
+export default Kids

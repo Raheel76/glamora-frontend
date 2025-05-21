@@ -2,10 +2,9 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ForgotPassword, Login, ResetPassword, Signup, VerifyOtp } from './auth';
-import { Home, UserLayout } from './pages/client';
-import { AdminLayout, AdminProfile, Dashboard } from './pages/admin';
+import { Home, UserLayout, UserProfile } from './pages/client';
+import { AdminLayout, AdminProfile, Dashboard, Kids, Men, Women, } from './pages/admin';
 import { AuthRoute, ProtectedRoute } from './routes';
-
 
 function App() {
   const router = createBrowserRouter([
@@ -29,6 +28,7 @@ function App() {
           element: <UserLayout />,
           children: [
             { path: '/', element: <Home /> },
+            { path: '/profile', element: <UserProfile /> },
           ],
         },
       ],
@@ -43,6 +43,10 @@ function App() {
           children: [
             { path: '', element: <Dashboard /> },
             { path: 'profile', element: <AdminProfile /> },
+            { path: 'men', element: <Men /> },
+            { path: 'women', element: <Women /> },
+            { path: 'kids', element: <Kids /> },
+
           ],
         },
       ],
