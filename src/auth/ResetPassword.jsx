@@ -59,7 +59,7 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateInputs()) return;
 
     setLoading(true);
@@ -109,17 +109,16 @@ const ResetPassword = () => {
                   <h6 className="font-medium mb-1">New Password</h6>
                   <Input.Password
                     placeholder="Enter new password"
-                    className={`w-full px-3 py-2 rounded-xl border bg-[#2294ff0a] border-gray-300 focus:outline-none ${
-                      errors.password || errors.mismatch ? 'border-red-500' : 'focus:border-blue-600'
-                    }`}
+                    className={`w-full px-3 py-2 rounded-xl border bg-[#2294ff0a] border-gray-300 focus:outline-none ${errors.password || errors.mismatch ? 'border-red-500' : 'focus:border-blue-600'
+                      }`}
                     minLength={4}
                     required
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
                       // Clear error when typing
-                      if (errors.password) setErrors({...errors, password: ''});
-                      if (errors.mismatch) setErrors({...errors, mismatch: ''});
+                      if (errors.password) setErrors({ ...errors, password: '' });
+                      if (errors.mismatch) setErrors({ ...errors, mismatch: '' });
                     }}
                   />
                   {errors.password && (
@@ -130,17 +129,16 @@ const ResetPassword = () => {
                   <h6 className="font-medium mb-1">Confirm New Password</h6>
                   <Input.Password
                     placeholder="Confirm new password"
-                    className={`w-full px-3 py-2 rounded-xl border bg-[#2294ff0a] border-gray-300 focus:outline-none ${
-                      errors.confirmPassword || errors.mismatch ? 'border-red-500' : 'focus:border-blue-600'
-                    }`}
+                    className={`w-full px-3 py-2 rounded-xl border bg-[#2294ff0a] border-gray-300 focus:outline-none ${errors.confirmPassword || errors.mismatch ? 'border-red-500' : 'focus:border-blue-600'
+                      }`}
                     minLength={4}
                     required
                     value={confirmPassword}
                     onChange={(e) => {
                       setConfirmPassword(e.target.value);
                       // Clear error when typing
-                      if (errors.confirmPassword) setErrors({...errors, confirmPassword: ''});
-                      if (errors.mismatch) setErrors({...errors, mismatch: ''});
+                      if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: '' });
+                      if (errors.mismatch) setErrors({ ...errors, mismatch: '' });
                     }}
                   />
                   {errors.confirmPassword && (
@@ -151,8 +149,10 @@ const ResetPassword = () => {
                   )}
                 </div>
                 <Button
+                  type="primary"
+                  size="large"
                   htmlType="submit"
-                  className="text-base rounded-xl font-medium w-full h-10 bg-[#44b1ec]  hover:!bg-[#42a4d8] !text-white"
+                  className="w-full bg-[#0F172A] hover:!bg-[#1E293B] h-12 text-lg"
                   disabled={loading}
                 >
                   {loading ? <Spin /> : "Reset Password"}

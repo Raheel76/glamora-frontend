@@ -138,8 +138,10 @@ const Signup = () => {
 
                 </div>
                 <Button
+                  type="primary"
+                  size="large"
                   htmlType="submit"
-                  className="text-base rounded-xl font-medium w-full h-10 bg-[#44b1ec]  hover:!bg-[#42a4d8] !text-white "
+                  className="w-full bg-[#0F172A] hover:!bg-[#1E293B] h-12 text-lg"
                   disabled={loading}
                 >
                   {loading ? <Spin /> : "Sign Up"}

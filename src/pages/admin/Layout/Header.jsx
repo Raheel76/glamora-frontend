@@ -17,7 +17,7 @@ const Header = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setProfile(response.data.profile);
-        console.log('Profile data:', response.data.profile); // Debug
+        // console.log('Profile data:', response.data.profile); 
       } catch (error) {
         console.error('Error fetching profile:', error.message);
         toast.error(error.response?.data?.message || 'Failed to fetch profile');
@@ -32,16 +32,14 @@ const Header = () => {
 
   return (
     <div className="flex justify-end items-center h-20 px-8 border-b border-gray-300 bg-white">
-      {loading ? (
-        <Spin tip="Loading profile..." />
-      ) : (
+     
         <div className="flex items-center gap-2">
           <div className='w-10 h-10'>
             <img
               src={
                 profile?.profileImage
                   ? `http://localhost:5000${profile.profileImage}`
-                  : 'https://via.placeholder.com/40'
+                  : 'img'
               }
               alt="Profile"
               className=" object-cover size-full rounded-full"
@@ -58,7 +56,7 @@ const Header = () => {
           </div>
 
         </div>
-      )}
+    
     </div>
   );
 };

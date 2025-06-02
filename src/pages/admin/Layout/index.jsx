@@ -8,9 +8,9 @@ const AdminLayout = () => {
         <>
             <div className="flex">
                 <Sidebar />
-            <div className=" flex-1">
+            <div className=" flex-1 w-full">
                 <Header />
-                <div className="main-container p-10">
+                <div className="main-container p-10 xs:p-4">
                     <Outlet />
                 </div>
             </div>

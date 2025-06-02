@@ -52,6 +52,7 @@ const AdminProfile = () => {
   };
 
   const onFinish = async (values) => {
+    // Only require image for new profiles, not edits
     if (!imageFile && !profileData?.profileImage && !isEditing) {
       toast.error('Profile image is required');
       return;
@@ -108,12 +109,11 @@ const AdminProfile = () => {
         firstName: profileData.firstName,
         lastName: profileData.lastName,
         address: profileData.address,
+        mobileNumber: profileData.mobileNumber || '', // Set mobileNumber in form
       });
-      setPhone(profileData.mobileNumber || '');
-      // Set image to full URL for existing profile image
+      setPhone(profileData.mobileNumber || ''); // Sync with PhoneInput
       setImage(profileData.profileImage ? `http://localhost:5000${profileData.profileImage}` : null);
       setImageFile(null); // Reset imageFile to avoid resending old image
-      console.log('Edit mode image:', profileData.profileImage); // Debug
     }
   };
 
@@ -166,12 +166,12 @@ const AdminProfile = () => {
                 className="cursor-pointer w-32 h-32 rounded-full bg-gray-100 overflow-hidden block"
               >
                 <img
-                  src={image || (profileData?.profileImage ? `http://localhost:5000${profileData.profileImage}` : 'https://via.placeholder.com/150')}
+                  src={image || (isEditing && profileData?.profileImage ? `http://localhost:5000${profileData.profileImage}` : 'https://via.placeholder.com/150')}
                   alt="Profile"
                   className="size-full object-cover"
-                  onError={() => console.log('Image failed to load')} 
+                  onError={(e) => { e.target.src = 'https://via.placeholder.com/150'; }}
                 />
-                <div className="absolute bottom-0 right-0 z-[11111] bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600">
+                <div className="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600">
                   <Icon icon="mdi:camera" width="20" />
                 </div>
               </label>
@@ -216,7 +216,6 @@ const AdminProfile = () => {
             <Form.Item
               label="Mobile Number"
               rules={[
-                { required: true, message: 'Please enter mobile number' },
                 {
                   validator: (_, value) =>
                     phone && phone.length >= 10
@@ -229,7 +228,10 @@ const AdminProfile = () => {
               <PhoneInput
                 country={'pk'}
                 value={phone}
-                onChange={(value) => setPhone(value)}
+                onChange={(value) => {
+                  setPhone(value);
+                  form.setFieldsValue({ mobileNumber: value }); // Sync with form
+                }}
                 inputStyle={{
                   width: '100%',
                   padding: '8px 48px',
@@ -292,7 +294,7 @@ const AdminProfile = () => {
               />
             </div>
           }
-          className="p-6 !bg-white  rounded-[32px]  shadow-md !max-w-2xl mx-auto mt-6"
+          className="p-6 bg-white rounded-[32px] shadow-md max-w-2xl mx-auto mt-6"
         >
           <div className="flex flex-col">
             <div className="flex justify-center mb-6">
@@ -305,6 +307,7 @@ const AdminProfile = () => {
                   }
                   alt="Profile"
                   className="size-full object-cover"
+                  onError={(e) => { e.target.src = 'https://via.placeholder.com/150'; }}
                 />
               </div>
             </div>

@@ -56,7 +56,7 @@ const Login = () => {
       localStorage.setItem('token', response.data.token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       toast.success(response.data.message);
-      console.log(response);
+      // console.log(response);
       // Redirect based on user role
       navigate(response.data.user.role === 'admin' ? '/admin' : '/');
     } catch (error) {
@@ -114,8 +114,10 @@ const Login = () => {
                 {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
               </div>
               <Button
+                type="primary"
+                size="large"
                 htmlType="submit"
-                className="text-base rounded-xl font-medium w-full h-10 bg-[#44b1ec]  hover:!bg-[#42a4d8] !text-white"
+                className="w-full bg-[#0F172A] hover:!bg-[#1E293B] h-12 text-lg"
                 disabled={loading}
               >
                 {loading ? <Spin /> : 'Log in'}

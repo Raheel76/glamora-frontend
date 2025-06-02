@@ -14,7 +14,7 @@ const VerifyOtp = () => {
   const email = location.state?.email || '';
 
 
- const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validate OTP input
@@ -80,9 +80,11 @@ const VerifyOtp = () => {
                 </div>
 
                 <Button
+                  type="primary"
+                  size="large"
                   htmlType="submit"
-                  className="text-base rounded-xl font-medium w-full h-10 bg-[#44b1ec]  hover:!bg-[#42a4d8] !text-white "
-                  loading={loading}
+                  className="w-full bg-[#0F172A] hover:!bg-[#1E293B] h-12 text-lg"
+                  disabled={loading}
                 >
                   {loading ? <Spin size="small" /> : 'Verify OTP'}
                 </Button>

@@ -2,7 +2,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ForgotPassword, Login, ResetPassword, Signup, VerifyOtp } from './auth';
-import { Home, UserLayout, UserProfile } from './pages/client';
+import { CheckoutPage, Home, MenPants, MenProducts, MenShirts, ProductDetailsPage, UserLayout, UserProfile } from './pages/client';
 import { AdminLayout, AdminProfile, Dashboard, Kids, Men, Women, } from './pages/admin';
 import { AuthRoute, ProtectedRoute } from './routes';
 
@@ -28,6 +28,11 @@ function App() {
           element: <UserLayout />,
           children: [
             { path: '/', element: <Home /> },
+            { path: '/men', element: <MenProducts /> },
+            { path: '/product/:id', element: <ProductDetailsPage /> },
+            { path: '/checkout', element: <CheckoutPage /> },
+            { path: '/men/shirts', element: <MenShirts /> },
+            { path: '/men/pants', element: <MenPants /> },
             { path: '/profile', element: <UserProfile /> },
           ],
         },
