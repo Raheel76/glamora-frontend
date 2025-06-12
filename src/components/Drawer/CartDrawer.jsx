@@ -1,23 +1,31 @@
 import React from 'react';
-import { Drawer, Button, InputNumber } from 'antd';
+import { Drawer, Button, InputNumber, message } from 'antd';
 import { Trash2, Minus, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import StoreUse from '../Store/StoreUse';
+import { toast } from 'react-toastify';
 
 const CartDrawer = () => {
   const navigate = useNavigate();
-  
-  const { cart, isCartOpen, setCartOpen, removeFromCart, updateQuantity } = StoreUse();
 
-  const total = cart.reduce((sum, item) => {
-    const itemPrice = item.onSale ? item.salePrice : item.price;
-    return sum + itemPrice * (item.quantity || 1);
-  }, 0);
+  const { cart, isCartOpen, setCartOpen, removeFromCart, updateQuantity, getCartTotal } = StoreUse();
+
+  const total = getCartTotal();
 
   const handleCheckout = () => {
+    if (cart.length === 0) {
+      toast.warning('Your cart is empty');
+      return;
+
+    }
     setCartOpen(false);
-    navigate('/checkout');
-  };
+    navigate('/checkout')
+  }
+
+  const handleRemoveItem = (itemId) => {
+    removeFromCart(itemId);
+    toast.success('Item removed from cart');
+  }
 
   return (
     <Drawer
@@ -36,50 +44,45 @@ const CartDrawer = () => {
           ) : (
             <div className="space-y-4">
               {cart.map((item) => (
-                <div key={item.id} className="flex gap-4 border-b pb-4">
+                <div key={item._id} className="flex gap-4 border-b pb-4">
                   <img
-                    src={item.images[0]}
-                    alt={item.title}
+                    src={`http://localhost:5000${item.images[0]}`}
+                    alt={item.name}
                     className="w-20 h-20 object-cover rounded"
                   />
                   <div className="flex-grow">
-                    <h3 className="font-medium">{item.title}</h3>
-                    <div className="text-sm text-gray-500">Size: {item.sizes[0]}</div>
+                    <h3 className="font-medium">{item.name}</h3>
+                    <div className="text-sm text-gray-500">
+                      Size: {item.selectedSize || item.sizes[0]} | Material: {item.material}
+                    </div>
                     <div className="font-medium">
-                      {item.onSale ? (
-                        <>
-                          <span className="text-red-600">${item.salePrice}</span>
-                          <span className="ml-2 text-sm text-gray-500 line-through">
-                            ${item.price}
-                          </span>
-                        </>
-                      ) : (
-                        <span>${item.price}</span>
-                      )}
+                      <div className="font-medium">
+                        Rs:{item.price}
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 mt-2">
                       <Button
                         size="small"
                         icon={<Minus size={14} />}
-                        onClick={() => updateQuantity(item.id, (item.quantity || 1) - 1)}
+                        onClick={() => updateQuantity(item._id, (item.quantity || 1) - 1)}
                       />
                       <InputNumber
                         min={1}
                         value={item.quantity || 1}
-                        onChange={(value) => updateQuantity(item.id, value)}
+                        onChange={(value) => updateQuantity(item._id, value)}
                         className="w-16"
                       />
                       <Button
                         size="small"
                         icon={<Plus size={14} />}
-                        onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
+                        onClick={() => updateQuantity(item._id, (item.quantity || 1) + 1)}
                       />
                     </div>
                   </div>
                   <Button
                     type="text"
                     icon={<Trash2 size={18} />}
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => handleRemoveItem(item._id, item.name)}
                     className="text-gray-500 hover:text-red-500"
                   />
                 </div>
@@ -87,16 +90,16 @@ const CartDrawer = () => {
             </div>
           )}
         </div>
-        
+
         {cart.length > 0 && (
           <div className="pt-4 border-t mt-4">
             <div className="flex justify-between mb-4">
               <span className="font-medium">Total:</span>
-              <span className="font-medium">${total.toFixed(2)}</span>
+              <span className="font-medium">Rs: {total.toFixed(2)}</span>
             </div>
-            <Button 
-              type="primary" 
-              block 
+            <Button
+              type="primary"
+              block
               className="bg-[#0F172A]"
               onClick={handleCheckout}
             >

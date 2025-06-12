@@ -1,50 +1,81 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-const StoreUse = create((set) => ({
-  cart: [],
-  favorites: [],
-  isCartOpen: false,
-  isWishlistOpen: false,
-  
-  addToCart: (item) => set((state) => {
-    const existingItem = state.cart.find((cartItem) => cartItem.id === item.id);
-    
-    if (existingItem) {
-      return {
-        cart: state.cart.map((cartItem) =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantity: (cartItem.quantity || 1) + 1 }
-            : cartItem
+const StoreUse = create(
+  persist(
+    (set, get) => ({
+      cart: [],
+      favorites: [],
+      isCartOpen: false,
+      isWishlistOpen: false,
+      user: null,
+
+      setUser: (user) => set({ user }),
+      clearUser: () => set({ user: null, cart: [], favorites: [] }),
+
+      addToCart: (item) => set((state) => {
+        const existingItem = state.cart.find((cartItem) => cartItem._id === item._id);
+
+        if (existingItem) {
+          return {
+            cart: state.cart.map((cartItem) =>
+              cartItem._id === item._id
+                ? { ...cartItem, quantity: (cartItem.quantity || 1) + 1 }
+                : cartItem
+            ),
+          };
+        }
+
+        return {
+          cart: [...state.cart, { ...item, quantity: 1 }],
+        };
+      }),
+
+      removeFromCart: (itemId) => set((state) => ({
+        cart: state.cart.filter((item) => item._id !== itemId)
+      })),
+
+      updateQuantity: (itemId, quantity) => set((state) => ({
+        cart: state.cart.map((item) =>
+          item._id === itemId ? { ...item, quantity: Math.max(1, quantity) } : item
         ),
-      };
-    }
-    
-    return {
-      cart: [...state.cart, { ...item, quantity: 1 }],
-    };
-  }),
-  
-  removeFromCart: (itemId) => set((state) => ({
-    cart: state.cart.filter((item) => item.id !== itemId)
-  })),
+      })),
 
-  updateQuantity: (itemId, quantity) => set((state) => ({
-    cart: state.cart.map((item) =>
-      item.id === itemId ? { ...item, quantity: Math.max(1, quantity) } : item
-    ),
-  })),
-  
-  toggleFavorite: (item) => set((state) => {
-    const isFavorite = state.favorites.some((fav) => fav.id === item.id);
-    return {
-      favorites: isFavorite
-        ? state.favorites.filter((fav) => fav.id !== item.id)
-        : [...state.favorites, item]
-    };
-  }),
-  
-  setCartOpen: (isOpen) => set({ isCartOpen: isOpen }),
-  setWishlistOpen: (isOpen) => set({ isWishlistOpen: isOpen }),
-}));
+      clearCart: () => set({ cart: [] }),
+
+      toggleFavorite: (item) => set((state) => {
+        const isFavorite = state.favorites.some((fav) => fav._id === item._id);
+        return {
+          favorites: isFavorite
+            ? state.favorites.filter((fav) => fav._id !== item._id)
+            : [...state.favorites, item]
+        };
+      }),
+
+      setCartOpen: (isOpen) => set({ isCartOpen: isOpen }),
+      setWishlistOpen: (isOpen) => set({ isWishlistOpen: isOpen }),
+
+      getCartTotal: () => {
+        const { cart } = get();
+        return cart.reduce((sum, item) => {
+          return sum + item.price * (item.quantity || 1);
+        }, 0);
+      },
+
+      getCartCount: () => {
+        const { cart } = get();
+        return cart.reduce((count, item) => count + (item.quantity || 1), 0);
+      },
+    }),
+    {
+      name: 'fashion-store',
+      partialize: (state) => ({
+        cart: state.cart,
+        favorites: state.favorites,
+        user: state.user,
+      }),
+    }
+  )
+);
 
 export default StoreUse;

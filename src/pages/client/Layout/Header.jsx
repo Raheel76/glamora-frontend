@@ -1,7 +1,7 @@
 import { Icon } from '@iconify/react/dist/iconify.js';
 import { Badge, Dropdown, Space, Spin } from 'antd'
 import axios from 'axios';
-import { Heart, ShoppingBag } from 'lucide-react';
+import { Heart, ShoppingBag, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify';
@@ -14,8 +14,6 @@ const Header = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-
-
 
   const handleLogout = async () => {
     try {
@@ -139,6 +137,12 @@ const Header = () => {
     },
     {
       key: '3',
+      label: 'My Orders',
+      icon: <Icon icon="fluent:shopping-bag-16-filled" />,
+      onClick: () => navigate('/my-orders')
+    },
+    {
+      key: '4',
       label: <span className='text-red-600'>Logout</span>,
       icon: <Icon icon="line-md:logout" className='text-red-600' />,
       onClick: handleLogout,

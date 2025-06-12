@@ -1,7 +1,8 @@
 import React from 'react';
-import { Modal, Button } from 'antd';
+import { Modal, Button, message } from 'antd';
 import { Trash2, ShoppingCart } from 'lucide-react';
 import StoreUse from '../../Store/StoreUse';
+import { toast } from 'react-toastify';
 
 const WishlistModal = () => {
   const { favorites, isWishlistOpen, setWishlistOpen, toggleFavorite, addToCart, setCartOpen } = StoreUse();
@@ -9,6 +10,12 @@ const WishlistModal = () => {
   const handleAddToCart = (item) => {
     addToCart(item);
     setCartOpen(true);
+    toast.success(`${item.name} added to cart!`);
+  };
+
+  const handleRemoveFromWishlist = (item) => {
+    toggleFavorite(item);
+    toast.success(`${item.name} removed from wishlist`);
   };
 
   return (
@@ -26,33 +33,24 @@ const WishlistModal = () => {
           </div>
         ) : (
           favorites.map((item) => (
-            <div key={item.id} className="flex gap-4 border-b pb-4">
+            <div key={item._id} className="flex gap-4 border-b pb-4">
               <img
-                src={item.images[0]}
-                alt={item.title}
+                src={`http://localhost:5000${item.images[0]}`}
+                alt={item.name}
                 className="w-24 h-24 object-cover rounded"
               />
               <div className="flex-grow">
-                <h3 className="font-medium">{item.title}</h3>
+                <h3 className="font-medium">{item.name}</h3>
                 <p className="text-sm text-gray-500 line-clamp-2">{item.description}</p>
                 <div className="font-medium mt-2">
-                  {item.onSale ? (
-                    <>
-                      <span className="text-red-600">${item.salePrice}</span>
-                      <span className="ml-2 text-sm text-gray-500 line-through">
-                        ${item.price}
-                      </span>
-                    </>
-                  ) : (
-                    <span>${item.price}</span>
-                  )}
+                  <span>Rs:{item.price}</span>
                 </div>
               </div>
               <div className="flex flex-col gap-2">
                 <Button
                   type="text"
                   icon={<Trash2 size={18} />}
-                  onClick={() => toggleFavorite(item)}
+                  onClick={() => handleRemoveFromWishlist(item)}
                   className="text-gray-500 hover:text-red-500"
                 />
                 <Button
@@ -60,7 +58,6 @@ const WishlistModal = () => {
                   icon={<ShoppingCart size={18} />}
                   onClick={() => handleAddToCart(item)}
                   className="bg-[#0F172A] hover:bg-[#1E293B]"
-                  disabled={!item.inStock}
                 />
               </div>
             </div>

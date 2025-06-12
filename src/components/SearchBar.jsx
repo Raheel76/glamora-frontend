@@ -1,9 +1,20 @@
 import React from 'react';
 import { Input, Select } from 'antd';
 import { Search, SlidersHorizontal } from 'lucide-react';
-import { handFeel } from '../data/shirts';
 
 const { Option } = Select;
+
+// Hand feel options for filtering
+const handFeelOptions = [
+  'All',
+  'Regular',
+  'Smooth',
+  'Light',
+  'Soft',
+  'Sturdy',
+  'Luxurious',
+  'Rough'
+];
 
 const SearchBar = ({ searchQuery, setSearchQuery, feelType, setFeelType }) => {
   return (
@@ -21,18 +32,18 @@ const SearchBar = ({ searchQuery, setSearchQuery, feelType, setFeelType }) => {
           />
         </div>
         
-        {/* Category filter */}
+        {/* Hand Feel filter */}
         <div className="w-full md:w-48">
           <Select
             value={feelType}
             onChange={setFeelType}
             className="w-full h-10"
-            placeholder="Category"
+            placeholder="Hand Feel"
             suffixIcon={<SlidersHorizontal size={16} className="text-gray-500" />}
           >
-            {handFeel.map((cat) => (
-              <Option key={cat} value={cat}>
-                {cat}
+            {handFeelOptions.map((feel) => (
+              <Option key={feel} value={feel}>
+                {feel}
               </Option>
             ))}
           </Select>

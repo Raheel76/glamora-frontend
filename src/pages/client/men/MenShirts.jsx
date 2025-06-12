@@ -1,60 +1,109 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Breadcrumb } from 'antd';
+import { Layout, Breadcrumb, Pagination, Spin, message } from 'antd';
 import { ChevronRight, Home, Tag } from 'lucide-react';
-import { shirts } from '../../../data/shirts';
 import { SearchBar, ShirtGrid, SortOptions } from '../../../components';
-
+import { productsAPI } from '../../../utils/api';
 const { Content } = Layout;
 
 const MenShirts = () => {
+  const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [feelType, setFeelType] = useState('All');
   const [sortOption, setSortOption] = useState('featured');
-  const [filteredShirts, setFilteredShirts] = useState(shirts);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(6); // Show 6 items per page
+  const [paginatedProducts, setPaginatedProducts] = useState([]);
 
   useEffect(() => {
-    // Filter shirts based on search query and handFeel
-    let filtered = [...shirts];
-    
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await productsAPI.getAll();
+
+        const menShirts = response.data.filter(
+          product => product.category === 'Men' && product.subcategory.toLowerCase().includes('shirt')
+        );
+        setProducts(menShirts);
+        setFilteredProducts(menShirts);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        message.error('Failed to load products');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    // Filter products based on search query and handFeel
+    let filtered = [...products];
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(shirt => 
-        shirt.title.toLowerCase().includes(query) || 
-        shirt.description.toLowerCase().includes(query)
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(query) ||
+        product.description.toLowerCase().includes(query)
       );
     }
-    
+
     if (feelType && feelType !== 'All') {
-     filtered = filtered.filter(shirt => shirt.handFeel === feelType);
+      filtered = filtered.filter(product => product.handFeel === feelType);
     }
-    
-    // Sort shirts based on selected option
+
+    // Sort products based on selected option
     switch (sortOption) {
       case 'newest':
-        filtered = filtered.sort((a, b) => (a.isNew === b.isNew) ? 0 : a.isNew ? -1 : 1);
+        filtered = filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
       case 'price-low':
-        filtered = filtered.sort((a, b) => (a.onSale ? a.salePrice : a.price) - (b.onSale ? b.salePrice : b.price));
+        filtered = filtered.sort((a, b) => a.price - b.price);
         break;
       case 'price-high':
-        filtered = filtered.sort((a, b) => (b.onSale ? b.salePrice : b.price) - (a.onSale ? a.salePrice : a.price));
+        filtered = filtered.sort((a, b) => b.price - a.price);
         break;
       case 'rating':
-        filtered = filtered.sort((a, b) => b.rating - a.rating);
         break;
       default:
-        // 'featured' - no specific sorting
         break;
     }
-    
-    setFilteredShirts(filtered);
-  }, [searchQuery, feelType, sortOption]);
+
+    setFilteredProducts(filtered);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [searchQuery, feelType, sortOption, products]);
+
+  useEffect(() => {
+    // Calculate pagination
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedData = filteredProducts.slice(startIndex, endIndex);
+    setPaginatedProducts(paginatedData);
+  }, [filteredProducts, currentPage, pageSize]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-gray-50 min-h-screen flex items-center justify-center">
+        <Spin size='large' />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen">
       <Content className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Breadcrumb */}
-        <Breadcrumb 
+        <Breadcrumb
           className="mb-6"
           separator={<ChevronRight size={14} className="text-gray-400" />}
           items={[
@@ -89,25 +138,43 @@ const MenShirts = () => {
             Find the perfect shirt for any occasion, from casual to formal.
           </p>
         </div>
-        
+
         {/* Search & Filter */}
-        <SearchBar 
-          searchQuery={searchQuery} 
+        <SearchBar
+          searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           feelType={feelType}
           setFeelType={setFeelType}
         />
-        
+
         {/* Sort Options */}
-        <SortOptions 
-          sortOption={sortOption} 
+        <SortOptions
+          sortOption={sortOption}
           setSortOption={setSortOption}
-          totalShirts={filteredShirts.length}
+          totalShirts={filteredProducts.length}
         />
-        
+
         {/* Product Grid */}
-        {filteredShirts.length > 0 ? (
-          <ShirtGrid shirts={filteredShirts} />
+        {paginatedProducts.length > 0 ? (
+          <>
+            <ShirtGrid shirts={paginatedProducts} />
+            
+            {/* Pagination */}
+            <div className="mt-12 flex justify-center">
+              <Pagination
+                current={currentPage}
+                total={filteredProducts.length}
+                pageSize={pageSize}
+                onChange={handlePageChange}
+                showSizeChanger={false}
+                showQuickJumper={false}
+                showTotal={(total, range) =>
+                  `${range[0]}-${range[1]} of ${total} items`
+                }
+                className="bg-white p-4 rounded-lg shadow-sm"
+              />
+            </div>
+          </>
         ) : (
           <div className="text-center py-12">
             <h3 className="text-lg font-medium text-gray-900">No shirts found</h3>
@@ -120,7 +187,3 @@ const MenShirts = () => {
 };
 
 export default MenShirts;
-
-
-
-

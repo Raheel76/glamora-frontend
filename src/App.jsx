@@ -2,8 +2,8 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ForgotPassword, Login, ResetPassword, Signup, VerifyOtp } from './auth';
-import { CheckoutPage, Home, MenPants, MenProducts, MenShirts, ProductDetailsPage, UserLayout, UserProfile } from './pages/client';
-import { AdminLayout, AdminProfile, Dashboard, Kids, Men, Women, } from './pages/admin';
+import { CheckoutPage, Home, MenPants, MenProducts, MenShirts, OrderConfirmationPage, ProductDetailsPage, UserLayout, UserOrdersPage, UserProfile } from './pages/client';
+import { AdminLayout, AdminProfile, Dashboard, Kids, ManageOrders, Men, Women, } from './pages/admin';
 import { AuthRoute, ProtectedRoute } from './routes';
 
 function App() {
@@ -32,8 +32,10 @@ function App() {
             { path: '/product/:id', element: <ProductDetailsPage /> },
             { path: '/checkout', element: <CheckoutPage /> },
             { path: '/men/shirts', element: <MenShirts /> },
-            { path: '/men/pants', element: <MenPants /> },
+            { path: '/men/shirts', element: <MenShirts /> },
+            { path: '/order-confirmation', element: <OrderConfirmationPage /> },
             { path: '/profile', element: <UserProfile /> },
+            { path: '/my-orders', element: <UserOrdersPage /> },
           ],
         },
       ],
@@ -51,7 +53,7 @@ function App() {
             { path: 'men', element: <Men /> },
             { path: 'women', element: <Women /> },
             { path: 'kids', element: <Kids /> },
-
+            { path: 'manage-orders', element: <ManageOrders /> },
           ],
         },
       ],

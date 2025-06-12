@@ -48,6 +48,10 @@ const Sidebar = () => {
                             <span className=' text-[14px] font-medium '>Kids</span>
                             <iconify-icon icon="hugeicons:kid" className='text-2xl'></iconify-icon>
                         </NavLink>
+                        <NavLink to='/admin/manage-orders' className="py-2  px-4 bg-white flex items-center justify-between rounded-md shadow-md">
+                            <span className=' text-[14px] font-medium '>Orders</span>
+                            <iconify-icon icon="fluent:shopping-bag-16-filled" className='text-2xl'></iconify-icon>
+                        </NavLink>
                         <NavLink to='/admin/profile' className="py-2  px-4 bg-white flex items-center justify-between rounded-md shadow-md">
                             <span className=' text-[14px] font-medium '>Profile</span>
                             <iconify-icon icon="carbon:user-profile"  className='text-2xl'></iconify-icon>
