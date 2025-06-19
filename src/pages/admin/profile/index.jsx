@@ -1,4 +1,4 @@
-import { Form, Input, Button, Card } from 'antd';
+import { Form, Input, Button, Card, Spin } from 'antd';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import PhoneInput from 'react-phone-input-2';
 import { useState, useRef, useEffect } from 'react';
@@ -20,6 +20,7 @@ const AdminProfile = () => {
   // Fetch profile on mount
   useEffect(() => {
     const fetchProfile = async () => {
+      setLoading(true)
       try {
         const response = await axios.get('http://localhost:5000/api/profile', {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -30,6 +31,8 @@ const AdminProfile = () => {
       } catch (error) {
         console.error('Error fetching profile:', error.message);
         toast.error(error.response?.data?.message || 'Failed to fetch profile');
+      } finally {
+        setLoading(false)
       }
     };
     fetchProfile();
@@ -153,6 +156,14 @@ const AdminProfile = () => {
       fileInputRef.current.value = '';
     }
   };
+
+   if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <>

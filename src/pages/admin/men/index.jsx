@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Empty, Space, Tooltip, Popconfirm } from 'antd';
+import { Table, Empty, Space, Tooltip, Popconfirm, Spin } from 'antd';
 import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -9,13 +9,17 @@ const Men = () => {
   const [products, setProducts] = useState([]);
   const [editProduct, setEditProduct] = useState(null);
   const [viewProduct, setViewProduct] = useState(null);
+  const [loading, setLoading] = useState(false)
 
   const fetchProducts = async () => {
     try {
+      setLoading(true)
       const response = await axios.get('http://localhost:5000/api/products');
       setProducts(response.data);
     } catch (error) {
       toast.error('Error fetching products');
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -84,28 +88,24 @@ const Men = () => {
       title: 'Product Name',
       dataIndex: 'name',
       key: 'name',
-      width: 240,
       className: 'center-column',
     },
     {
       title: 'Category',
       dataIndex: 'category',
       key: 'category',
-      width: 240,
       className: 'center-column',
     },
     {
       title: 'Subcategory',
       dataIndex: 'subcategory',
       key: 'subcategory',
-      width: 240,
       className: 'center-column',
     },
     {
       title: 'Price',
       dataIndex: 'price',
       key: 'price',
-      width: 240,
       className: 'center-column',
       render: (price) => `Rs.${Number(price).toFixed(2)}`,
     },
@@ -113,7 +113,6 @@ const Men = () => {
       title: 'Description',
       dataIndex: 'description',
       key: 'description',
-      width: 240,
       className: 'center-column',
       render: (description) => (
         <div className='flex flex-col text-center items-center h-full justify-center'>
@@ -127,14 +126,12 @@ const Men = () => {
       title: 'Sizes',
       dataIndex: 'sizes',
       key: 'sizes',
-      width: 300,
       className: 'center-column',
       render: (sizes) => (sizes && sizes.length > 0 ? sizes.join(', ') : 'N/A'),
     },
     {
       title: 'Actions',
       key: 'actions',
-      width: 150,
       className: 'center-column',
       render: (_, record) => (
         <Space size="middle">
@@ -159,6 +156,13 @@ const Men = () => {
     },
   ];
 
+ if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spin size="large" />
+      </div>
+    );
+  }
   return (
     <div className="container mx-auto  md:px-4">
       <div className="flex xs:flex-col gap-3 justify-between mb-8">
@@ -182,7 +186,9 @@ const Men = () => {
             dataSource={shirtsData}
             rowKey="_id"
             pagination={{ pageSize: 5 }}
-            className='customs-table  overflow-x-auto'
+            className=' overflow-x-auto'
+                   scroll={{ x: 'max-content' }}
+
           />
         </div>
       )}
@@ -200,8 +206,9 @@ const Men = () => {
             rowKey="_id"
             className="customs-table  overflow-x-auto "
             rowClassName={() => "custom-row"}
-            scroll={{ xs: "100%" }}
             pagination={{ pageSize: 5 }}
+            scroll={{ x: 'max-content' }}
+
           />
         </div>
       )}

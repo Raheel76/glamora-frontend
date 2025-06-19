@@ -1,18 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Card, Badge, Button, Spin, Empty, Divider, Modal, Image } from 'antd';
-import { Package, Eye, Calendar, CreditCard, MapPin, Phone, Mail } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Layout, Card, Badge, Button, Spin, Empty, Divider, Modal, Image, Popconfirm, Pagination, Input } from 'antd';
+import { Package, Eye, Calendar, CreditCard, MapPin, Phone, Mail, X, TruckElectric, Search, SearchIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { ordersAPI } from '../../../utils/api';
 import { toast } from 'react-toastify';
+import { ordersAPI } from '../../../utils/api';
+import { OrderTracker } from '../../../components';
 
 const { Content } = Layout;
 
-const OrderHistoryPage = () => {
+const UserOrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [trackingVisible, setTrackingVisible] = useState(false);
+  const [cancellingOrder, setCancellingOrder] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('')
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(6);
 
   useEffect(() => {
     fetchOrders();
@@ -60,6 +66,29 @@ const OrderHistoryPage = () => {
     setModalVisible(true);
   };
 
+  const handleTrackOrder = (order) => {
+    setSelectedOrder(order);
+    setTrackingVisible(true);
+  };
+
+  const handleCancelOrder = async (orderId) => {
+    try {
+      setCancellingOrder(orderId)
+      await ordersAPI.cancelOrder(orderId);
+      toast.success('order cancelled successfully')
+      fetchOrders()
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      toast.error('Failed to cancel order')
+    } finally {
+      setCancellingOrder(null)
+    }
+  }
+
+  const canCancelOrder = (order) => {
+    return ['pending', 'confirmed'].includes(order.status)
+  }
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -68,6 +97,25 @@ const OrderHistoryPage = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const filteredOrders = useMemo(() => {
+    if (!searchQuery.trim()) return orders;
+    return orders.filter((order) =>
+      order.orderNumber.toLowerCase().includes(searchQuery.trim().toLowerCase())
+    );
+  }, [orders, searchQuery]);
+
+  const handleSearch = (value) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  };
+
+  const paginatedOrders = useMemo(() => {
+    return filteredOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  }, [filteredOrders, currentPage, pageSize]);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   if (loading) {
@@ -79,11 +127,25 @@ const OrderHistoryPage = () => {
   }
 
   return (
-    <Layout className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       <Content className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Order History</h1>
-          <p className="text-gray-600 mt-2">Track and manage all your orders</p>
+        <div className="flex justify-between items-center mb-8 ">
+
+          <div >
+            <h1 className="text-3xl font-bold text-gray-900">Order History</h1>
+            <p className="text-gray-600 mt-2">Track and manage all your orders</p>
+          </div>
+          <div className="">
+            <Input
+              placeholder="Search by order number"
+              allowClear
+              size="large"
+              prefix={<Search size={18} className="text-gray-400" />}
+              onSearch={handleSearch}
+              onChange={(e) => handleSearch(e.target.value)}
+              value={searchQuery}
+            />
+          </div>
         </div>
 
         {orders.length === 0 ? (
@@ -108,8 +170,8 @@ const OrderHistoryPage = () => {
           </Card>
         ) : (
           <div className="space-y-6">
-            {orders.map((order) => (
-              <Card key={order._id} className="shadow-sm hover:shadow-md transition-shadow">
+            {paginatedOrders.map((order) => (
+              <Card key={order._id} className={`shadow-sm hover:shadow-md transition-shadow ${order.status === 'cancelled' ? 'bg-red-200 cursor-not-allowed !border-red-200 ' : ''} `}>
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-4 mb-2">
@@ -117,13 +179,13 @@ const OrderHistoryPage = () => {
                         <Package size={20} className="text-gray-500" />
                         <span className="font-semibold text-lg">Order #{order.orderNumber}</span>
                       </div>
-                      <Badge 
-                        color={getStatusColor(order.status)} 
+                      <Badge
+                        color={getStatusColor(order.status)}
                         text={getStatusText(order.status)}
                         className="font-medium"
                       />
                     </div>
-                    
+
                     <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
                       <div className="flex items-center gap-1">
                         <Calendar size={16} />
@@ -147,12 +209,41 @@ const OrderHistoryPage = () => {
 
                   <div className="flex items-center gap-2">
                     <Button
-                      type="default"
+                      type="primary"
                       icon={<Eye size={16} />}
                       onClick={() => handleViewOrder(order)}
                     >
                       View Details
                     </Button>
+
+                    <Button
+                      type="default"
+                      icon={<TruckElectric size={16} />}
+                      onClick={() => handleTrackOrder(order)}
+                      className="bg-green-50 !text-green-600 !border-green-200 hover:!bg-green-100"
+                    >
+                      Track Order
+                    </Button>
+
+                    {canCancelOrder(order) && (
+                      <Popconfirm
+                        title="Cancel Order"
+                        description="Are you sure you want to cancel this order?"
+                        onConfirm={() => handleCancelOrder(order._id)}
+                        okText="Yes, Cancel"
+                        cancelText="No"
+                        okButtonProps={{ danger: true }}
+                      >
+                        <Button
+                          danger
+                          icon={<X size={16} />}
+                          className=' !bg-red-50 !text-red-600 !border-red-200 hover:!bg-red-100'
+                          loading={cancellingOrder === order._id}
+                        >
+                          Cancel
+                        </Button>
+                      </Popconfirm>
+                    )}
                   </div>
                 </div>
 
@@ -183,6 +274,21 @@ const OrderHistoryPage = () => {
           </div>
         )}
 
+        <div className="mt-12 flex justify-center">
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={orders.length}
+            onChange={handlePageChange}
+            showSizeChanger={false}
+            showQuickJumper={false}
+            showTotal={(total, range) =>
+              `${range[0]}-${range[1]} of ${total} items`
+            }
+            className="bg-white p-4 rounded-lg shadow-sm"
+          />
+        </div>
+
         {/* Order Details Modal */}
         <Modal
           title={`Order Details - #${selectedOrder?.orderNumber}`}
@@ -191,137 +297,175 @@ const OrderHistoryPage = () => {
           footer={null}
           width={800}
           className="order-details-modal"
+          centered
         >
-          {selectedOrder && (
-            <div className="space-y-6">
-              {/* Order Status */}
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Package size={24} className="text-gray-600" />
-                  <div>
-                    <h3 className="font-semibold">Order Status</h3>
-                    <p className="text-sm text-gray-600">{formatDate(selectedOrder.createdAt)}</p>
+          <div className="modal-scroll pe-2">
+            {selectedOrder && (
+              <div className="space-y-6">
+                {/* Order Status */}
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Package size={24} className="text-gray-600" />
+                    <div>
+                      <h3 className="font-semibold">Order Status</h3>
+                      <p className="text-sm text-gray-600">{formatDate(selectedOrder.createdAt)}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Badge
+                      color={getStatusColor(selectedOrder.status)}
+                      text={getStatusText(selectedOrder.status)}
+                      className="font-medium text-lg"
+                    />
+                    {canCancelOrder(selectedOrder) && (
+                      <Popconfirm
+                        title="Cancel Order"
+                        description="Are you sure you want to cancel this order?"
+                        onConfirm={() => {
+                          handleCancelOrder(selectedOrder._id);
+                          setModalVisible(false);
+                        }}
+                        okText="Yes, Cancel"
+                        cancelText="No"
+                        okButtonProps={{ danger: true }}
+                      >
+                        <Button danger size="small">
+                          Cancel Order
+                        </Button>
+                      </Popconfirm>
+                    )}
                   </div>
                 </div>
-                <Badge 
-                  color={getStatusColor(selectedOrder.status)} 
-                  text={getStatusText(selectedOrder.status)}
-                  className="font-medium text-lg"
-                />
-              </div>
 
-              {/* Order Items */}
-              <div>
-                <h3 className="font-semibold mb-4">Order Items</h3>
-                <div className="space-y-4">
-                  {selectedOrder.items.map((item, index) => (
-                    <div key={index} className="flex gap-4 p-4 bg-gray-50 rounded-lg">
-                      <Image
-                        src={`http://localhost:5000${item.image}`}
-                        alt={item.name}
-                        width={80}
-                        height={80}
-                        className="object-cover rounded"
-                        fallback="https://via.placeholder.com/80x80?text=No+Image"
-                      />
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-900">{item.name}</h4>
-                        <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
-                          <span>Size: <span className="font-medium">{item.size}</span></span>
-                          <span>Qty: <span className="font-medium">{item.quantity}</span></span>
-                          <span>Price: <span className="font-medium">Rs: {item.price.toFixed(2)}</span></span>
-                        </div>
-                        <div className="mt-2">
-                          <span className="font-semibold text-gray-900">
-                            Total: Rs: {(item.price * item.quantity).toFixed(2)}
-                          </span>
+                {/* Order Items */}
+                <div>
+                  <h3 className="font-semibold mb-4">Order Items</h3>
+                  <div className="space-y-4">
+                    {selectedOrder.items.map((item, index) => (
+                      <div key={index} className="flex gap-4 p-4 bg-gray-50 rounded-lg">
+                        <Image
+                          src={`http://localhost:5000${item.image}`}
+                          alt={item.name}
+                          width={80}
+                          height={80}
+                          className="object-cover rounded"
+                          fallback="https://via.placeholder.com/80x80?text=No+Image"
+                        />
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900">{item.name}</h4>
+                          <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
+                            <span>Size: <span className="font-medium">{item.size}</span></span>
+                            <span>Qty: <span className="font-medium">{item.quantity}</span></span>
+                            <span>Price: <span className="font-medium">Rs: {item.price.toFixed(2)}</span></span>
+                          </div>
+                          <div className="mt-2">
+                            <span className="font-semibold text-gray-900">
+                              Total: Rs: {(item.price * item.quantity).toFixed(2)}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Order Summary */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-3">Order Summary</h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Subtotal</span>
-                    <span>Rs: {selectedOrder.subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Shipping</span>
-                    <span>{selectedOrder.shipping === 0 ? 'Free' : `Rs: ${selectedOrder.shipping.toFixed(2)}`}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Tax</span>
-                    <span>Rs: {selectedOrder.tax.toFixed(2)}</span>
-                  </div>
-                  <Divider className="my-2" />
-                  <div className="flex justify-between font-semibold text-lg">
-                    <span>Total</span>
-                    <span className="text-green-600">Rs: {selectedOrder.total.toFixed(2)}</span>
+                    ))}
                   </div>
                 </div>
-              </div>
 
-              {/* Shipping Address */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <MapPin size={18} />
-                  Shipping Address
-                </h3>
-                <div className="text-sm space-y-1">
-                  <p className="font-medium">
-                    {selectedOrder.shippingAddress.firstName} {selectedOrder.shippingAddress.lastName}
-                  </p>
-                  <p>{selectedOrder.shippingAddress.address}</p>
-                  {selectedOrder.shippingAddress.apartment && (
-                    <p>{selectedOrder.shippingAddress.apartment}</p>
-                  )}
-                  <p>
-                    {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.zipCode}
-                  </p>
-                  <div className="flex items-center gap-4 mt-2 pt-2 border-t border-gray-200">
-                    <div className="flex items-center gap-1">
-                      <Mail size={14} />
-                      <span>{selectedOrder.shippingAddress.email}</span>
+                {/* Order Summary */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold mb-3">Order Summary</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Subtotal</span>
+                      <span>Rs: {selectedOrder.subtotal.toFixed(2)}</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Phone size={14} />
-                      <span>{selectedOrder.shippingAddress.phone}</span>
+                    <div className="flex justify-between text-sm">
+                      <span>Shipping</span>
+                      <span>{selectedOrder.shipping === 0 ? 'Free' : `Rs: ${selectedOrder.shipping.toFixed(2)}`}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Tax</span>
+                      <span>Rs: {selectedOrder.tax.toFixed(2)}</span>
+                    </div>
+                    <Divider className="my-2" />
+                    <div className="flex justify-between font-semibold text-lg">
+                      <span>Total</span>
+                      <span className="text-green-600">Rs: {selectedOrder.total.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Payment Method */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <CreditCard size={18} />
-                  Payment Method
-                </h3>
-                <div className="flex items-center justify-between">
-                  <span className="capitalize">
-                    {selectedOrder.paymentMethod === 'cod' ? 'Cash on Delivery' : 
-                     selectedOrder.paymentMethod === 'card' ? 'Credit/Debit Card' :
-                     selectedOrder.paymentMethod === 'paypal' ? 'PayPal' :
-                     selectedOrder.paymentMethod}
-                  </span>
-                  <Badge 
-                    color={selectedOrder.paymentMethod === 'cod' ? 'orange' : 'green'}
-                    text={selectedOrder.paymentMethod === 'cod' ? 'Pending' : 'Paid'}
-                  />
+                {/* Shipping Address */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <MapPin size={18} />
+                    Shipping Address
+                  </h3>
+                  <div className="text-sm space-y-1">
+                    <p className="font-medium">
+                      {selectedOrder.shippingAddress.firstName} {selectedOrder.shippingAddress.lastName}
+                    </p>
+                    <p>{selectedOrder.shippingAddress.address}</p>
+                    {selectedOrder.shippingAddress.apartment && (
+                      <p>{selectedOrder.shippingAddress.apartment}</p>
+                    )}
+                    <p>
+                      {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.zipCode}
+                    </p>
+                    <div className="flex items-center gap-4 mt-2 pt-2 border-t border-gray-200">
+                      <div className="flex items-center gap-1">
+                        <Mail size={14} />
+                        <span>{selectedOrder.shippingAddress.email}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Phone size={14} />
+                        <span>{selectedOrder.shippingAddress.phone}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment Method */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <CreditCard size={18} />
+                    Payment Method
+                  </h3>
+                  <div className="flex items-center justify-between">
+                    <span className="capitalize">
+                      {selectedOrder.paymentMethod === 'cod' ? 'Cash on Delivery' :
+                        selectedOrder.paymentMethod === 'card' ? 'Credit/Debit Card' :
+                          selectedOrder.paymentMethod === 'paypal' ? 'PayPal' :
+                            selectedOrder.paymentMethod}
+                    </span>
+                    <Badge
+                      color={selectedOrder.paymentMethod === 'cod' ? 'orange' : 'green'}
+                      text={selectedOrder.paymentMethod === 'cod' ? 'Pending' : 'Paid'}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </Modal>
+
+        {/* Order Tracking Modal */}
+        <Modal
+          title={`Track Order - #${selectedOrder?.orderNumber}`}
+          open={trackingVisible}
+          onCancel={() => setTrackingVisible(false)}
+          footer={null}
+          width={900}
+          centered
+        >
+          <div className="modal-scroll pe-2">
+            {selectedOrder && (
+              <OrderTracker order={selectedOrder} />
+            )}
+          </div>
+        </Modal>
+
       </Content>
-    </Layout>
+    </div>
   );
 };
 
-export default OrderHistoryPage;
-;
+export default UserOrdersPage;

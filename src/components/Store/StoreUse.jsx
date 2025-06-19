@@ -1,17 +1,20 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import axios from 'axios';
 
-const StoreUse = create(
+const storeUse = create(
   persist(
     (set, get) => ({
       cart: [],
       favorites: [],
+      notifications: [],
       isCartOpen: false,
       isWishlistOpen: false,
+      isNotificationOpen: false,
       user: null,
 
       setUser: (user) => set({ user }),
-      clearUser: () => set({ user: null, cart: [], favorites: [] }),
+      clearUser: () => set({ user: null, cart: [], favorites: [], notifications: [] }),
 
       addToCart: (item) => set((state) => {
         const existingItem = state.cart.find((cartItem) => cartItem._id === item._id);
@@ -32,7 +35,7 @@ const StoreUse = create(
       }),
 
       removeFromCart: (itemId) => set((state) => ({
-        cart: state.cart.filter((item) => item._id !== itemId)
+        cart: state.cart.filter((item) => item._id !== itemId),
       })),
 
       updateQuantity: (itemId, quantity) => set((state) => ({
@@ -48,12 +51,53 @@ const StoreUse = create(
         return {
           favorites: isFavorite
             ? state.favorites.filter((fav) => fav._id !== item._id)
-            : [...state.favorites, item]
+            : [...state.favorites, item],
         };
       }),
 
       setCartOpen: (isOpen) => set({ isCartOpen: isOpen }),
       setWishlistOpen: (isOpen) => set({ isWishlistOpen: isOpen }),
+      setNotificationOpen: (isOpen) => set({ isNotificationOpen: isOpen }),
+
+      // Notification methods
+      setNotifications: (notifications) => set({ notifications: Array.isArray(notifications) ? notifications : [] }),
+
+      addNotification: (notification) => set((state) => ({
+        notifications: [notification, ...state.notifications],
+      })),
+
+      markNotificationAsRead: (notificationId) => set((state) => ({
+        notifications: state.notifications.map((notification) =>
+          notification._id === notificationId
+            ? { ...notification, read: true }
+            : notification
+        ),
+      })),
+
+      markAllNotificationsAsRead: () => set((state) => ({
+        notifications: state.notifications.map((notification) => ({
+          ...notification,
+          read: true,
+        })),
+      })),
+
+      removeNotification: (notificationId) => set((state) => ({
+        notifications: state.notifications.filter((notification) => notification._id !== notificationId),
+      })),
+
+      // Fetch notifications from API
+      fetchNotifications: async () => {
+        try {
+          const response = await axios.get('http://localhost:5000/api/notifications', {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          });
+          const notificationsData = Array.isArray(response.data.data) ? response.data.data : [];
+          set({ notifications: notificationsData });
+        } catch (error) {
+          console.error('Error fetching notifications:', error);
+          set({ notifications: [] }); // Ensure notifications is always an array
+        }
+      },
 
       getCartTotal: () => {
         const { cart } = get();
@@ -73,9 +117,10 @@ const StoreUse = create(
         cart: state.cart,
         favorites: state.favorites,
         user: state.user,
+        notifications: state.notifications,
       }),
     }
   )
 );
 
-export default StoreUse;
+export default storeUse;

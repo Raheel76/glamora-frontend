@@ -102,7 +102,7 @@ const ProductDetailsPage = () => {
 
     const handleToggleFavorite = () => {
         toggleFavorite(product);
-        toast.success(isFavorite ? 'Removed from wishlist' : 'Added to wishlist');
+        // toast.success(isFavorite ? 'Removed from wishlist' : 'Added to wishlist');
     };
 
     return (

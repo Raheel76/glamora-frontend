@@ -15,7 +15,7 @@ const WishlistModal = () => {
 
   const handleRemoveFromWishlist = (item) => {
     toggleFavorite(item);
-    toast.success(`${item.name} removed from wishlist`);
+    // toast.success(`${item.name} removed from wishlist`);
   };
 
   return (
@@ -25,8 +25,9 @@ const WishlistModal = () => {
       onCancel={() => setWishlistOpen(false)}
       footer={null}
       width={800}
+      centered
     >
-      <div className="space-y-4">
+      <div className="space-y-4 modal-scroll pe-2 ">
         {favorites.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             Your wishlist is empty

@@ -31,12 +31,12 @@ const ShirtCard = ({ shirt }) => {
   const handleAddToCart = () => {
     addToCart(shirt);
     setCartOpen(true);
-    toast.success('Product added to cart!');
+    // toast.success('Product added to cart!');
   };
 
   const handleToggleFavorite = () => {
     toggleFavorite(shirt);
-    toast.success(isFavorite ? 'Removed from wishlist' : 'Added to wishlist');
+    // toast.success(isFavorite ? 'Removed from wishlist' : 'Added to wishlist');
   };
 
   return (

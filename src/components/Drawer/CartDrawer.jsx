@@ -24,7 +24,7 @@ const CartDrawer = () => {
 
   const handleRemoveItem = (itemId) => {
     removeFromCart(itemId);
-    toast.success('Item removed from cart');
+    // toast.success('Item removed from cart');
   }
 
   return (
@@ -92,7 +92,7 @@ const CartDrawer = () => {
         </div>
 
         {cart.length > 0 && (
-          <div className="pt-4 border-t mt-4">
+          <div className="py-4 border-t mt-4">
             <div className="flex justify-between mb-4">
               <span className="font-medium">Total:</span>
               <span className="font-medium">Rs: {total.toFixed(2)}</span>

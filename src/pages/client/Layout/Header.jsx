@@ -1,14 +1,14 @@
 import { Icon } from '@iconify/react/dist/iconify.js';
 import { Badge, Dropdown, Space, Spin } from 'antd'
 import axios from 'axios';
-import { Heart, ShoppingBag, User } from 'lucide-react';
+import { Bell, Heart, Mail, ShoppingBag, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import { StoreUse } from '../../../components';
 
 const Header = () => {
-  const { cart, favorites, setCartOpen, setWishlistOpen } = StoreUse();
+  const { cart, favorites, setCartOpen, setWishlistOpen, notifications, setNotificationOpen,fetchNotifications } = StoreUse();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -123,31 +123,33 @@ const Header = () => {
     }
   ];
 
-  const profileItems = [
+   const profileItems = [
     {
       key: '1',
       label: <span>{profile?.email}</span>,
-      icon: <Icon icon="line-md:email" />,
+      icon: <Mail size={20} />,
     },
     {
       key: '2',
-      label: 'Profile',
-      icon: <Icon icon="iconamoon:profile" />,
-      onClick: () => navigate('/profile')
+      label: 'My Orders',
+      icon: <ShoppingBag size={20} />,
+      onClick: () => navigate('/my-orders')
     },
     {
       key: '3',
-      label: 'My Orders',
-      icon: <Icon icon="fluent:shopping-bag-16-filled" />,
-      onClick: () => navigate('/my-orders')
+      label: 'Profile',
+      icon: <User size={20} />,
+      onClick: () => navigate('/profile')
     },
     {
       key: '4',
       label: <span className='text-red-600'>Logout</span>,
-      icon: <Icon icon="line-md:logout" className='text-red-600' />,
+      icon: <X size={20} className='text-red-600' />,
       onClick: handleLogout,
     },
+     
   ];
+  const unreadNotifications = Array.isArray(notifications) ? notifications.filter(n => !n.read).length : 0;
 
   // Check which category is active based on current route
   const isCategoryActive = (categoryPath) => {
@@ -159,23 +161,30 @@ const Header = () => {
     return location.pathname === itemPath;
   };
 
-  useEffect(() => {
-    const fetchProfile = async () => {
+   useEffect(() => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('http://localhost:5000/api/profile', {
+        // Fetch profile
+        const profileResponse = await axios.get('http://localhost:5000/api/profile', {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
-        setProfile(response.data.profile);
+        setProfile(profileResponse.data.profile);
+
+        // Fetch notifications
+        await fetchNotifications(); // Call fetchNotifications from StoreUse
       } catch (error) {
-        console.error('Error fetching profile:', error.message);
-        toast.error(error.response?.data?.message || 'Failed to fetch profile');
+        console.error('Error fetching data:', error.message);
+        toast.error(error.response?.data?.message || 'Failed to fetch data');
       } finally {
         setLoading(false);
       }
     };
-    fetchProfile();
-  }, []);
+
+    if (localStorage.getItem('token')) {
+      fetchData();
+    }
+  }, [fetchNotifications]);
 
   return (
     <div className="flex justify-between items-center h-20 px-8 shadow-md bg-[#0f172a]">
@@ -227,7 +236,7 @@ const Header = () => {
         {loading ? (
           <Spin />
         ) : (
-          <Dropdown menu={{ items: profileItems }} trigger={['click']}>
+          <Dropdown menu={{ items: profileItems }} >
             <div onClick={(e) => e.preventDefault()} className='flex items-center gap-3 cursor-pointer'>
               <div className="flex items-center gap-2">
                 <div className='w-10 h-10'>
@@ -252,6 +261,12 @@ const Header = () => {
         )}
 
         <div className="flex items-center gap-4">
+         <Badge count={unreadNotifications} size="small">
+            <Bell 
+              onClick={() => setNotificationOpen(true)} 
+              className="w-6 h-6 text-white cursor-pointer hover:text-[#FF6B6B]" 
+            />
+          </Badge>
           <Badge count={favorites.length} size="small">
             <Heart onClick={() => setWishlistOpen(true)} className="w-6 h-6 text-white cursor-pointer" />
           </Badge>

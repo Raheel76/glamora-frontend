@@ -2,11 +2,13 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ForgotPassword, Login, ResetPassword, Signup, VerifyOtp } from './auth';
-import { CheckoutPage, Home, MenPants, MenProducts, MenShirts, OrderConfirmationPage, ProductDetailsPage, UserLayout, UserOrdersPage, UserProfile } from './pages/client';
-import { AdminLayout, AdminProfile, Dashboard, Kids, ManageOrders, Men, Women, } from './pages/admin';
+import { CheckoutPage, Home, MenPants, MenProducts, MenShirts, OrderConfirmationPage,  ProductDetailsPage, UserLayout, UserOrdersPage, UserProfile } from './pages/client';
+import { AdminLayout, AdminProfile, AdminWallet, Dashboard, Kids, ManageOrders, Men, Women, } from './pages/admin';
 import { AuthRoute, ProtectedRoute } from './routes';
+import { NotificationManager } from './components/common';
 
 function App() {
+  
   const router = createBrowserRouter([
     {
       path: '/auth',
@@ -36,6 +38,7 @@ function App() {
             { path: '/order-confirmation', element: <OrderConfirmationPage /> },
             { path: '/profile', element: <UserProfile /> },
             { path: '/my-orders', element: <UserOrdersPage /> },
+
           ],
         },
       ],
@@ -54,6 +57,8 @@ function App() {
             { path: 'women', element: <Women /> },
             { path: 'kids', element: <Kids /> },
             { path: 'manage-orders', element: <ManageOrders /> },
+            { path: 'wallet', element: <AdminWallet /> },
+            { path: 'notifications', element: <NotificationManager /> },
           ],
         },
       ],

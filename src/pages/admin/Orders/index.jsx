@@ -94,6 +94,7 @@ const ManageOrders = () => {
       title: 'Order #',
       dataIndex: 'orderNumber',
       key: 'orderNumber',
+      className: 'center-column',
       render: (orderNumber) => (
         <span className="font-medium text-blue-600">#{orderNumber}</span>
       ),
@@ -101,6 +102,7 @@ const ManageOrders = () => {
     {
       title: 'Customer',
       key: 'customer',
+      className: 'center-column',
       render: (_, record) => (
         <div>
           <div className="font-medium">
@@ -114,8 +116,9 @@ const ManageOrders = () => {
       title: 'Items',
       dataIndex: 'items',
       key: 'items',
+      className: 'center-column',
       render: (items) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center  gap-2">
           <Package size={16} className="text-gray-500" />
           <span>{items?.length || 0} item{(items?.length || 0) > 1 ? 's' : ''}</span>
         </div>
@@ -125,6 +128,7 @@ const ManageOrders = () => {
       title: 'Total',
       dataIndex: 'total',
       key: 'total',
+      className: 'center-column',
       render: (total) => (
         <span className="font-semibold text-green-600">Rs: {total?.toFixed(2) || '0.00'}</span>
       ),
@@ -133,8 +137,9 @@ const ManageOrders = () => {
       title: 'Payment',
       dataIndex: 'paymentMethod',
       key: 'paymentMethod',
+      className: 'center-column',
       render: (paymentMethod) => (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center justify-center gap-1">
           <CreditCard size={14} />
           <span className="capitalize text-sm">{paymentMethod}</span>
         </div>
@@ -144,6 +149,7 @@ const ManageOrders = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      className: 'center-column',
       render: (status, record) => (
         <Select
           value={status}
@@ -176,8 +182,9 @@ const ManageOrders = () => {
       title: 'Date',
       dataIndex: 'createdAt',
       key: 'createdAt',
+      className: 'center-column',
       render: (date) => (
-        <div className="flex items-center gap-1 text-sm">
+        <div className="flex items-center justify-center gap-1 text-sm">
           <Calendar size={14} className="text-gray-500" />
           <span>{formatDate(date)}</span>
         </div>
@@ -186,6 +193,7 @@ const ManageOrders = () => {
     {
       title: 'Actions',
       key: 'actions',
+      className: 'center-column',
       render: (_, record) => (
         <Button
           type="link"
@@ -215,7 +223,6 @@ const ManageOrders = () => {
           <p className="text-gray-600 mt-1">Manage and track all customer orders</p>
         </div>
 
-        <Card className="shadow-sm">
           {/* Filters */}
           <div className="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
@@ -264,19 +271,21 @@ const ManageOrders = () => {
           </div>
 
           {/* Orders Table */}
+          <div className=' product-table'>
           <Table
             columns={columns}
             dataSource={filteredOrders}
             rowKey="_id"
+            className='w-full show-scrollbar overflow-auto data-table height-horizontal-scrollbar-10'
             pagination={{
               pageSize: 10,
               showSizeChanger: true,
               showQuickJumper: true,
               showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} orders`,
             }}
-            scroll={{ x: 1000 }}
+            scroll={{ x: 'max-content' }}
           />
-        </Card>
+          </div>
 
         {/* Order Details Modal */}
         <Modal
@@ -311,7 +320,6 @@ const ManageOrders = () => {
                         updateOrderStatus(selectedOrder._id, newStatus);
                         setSelectedOrder({...selectedOrder, status: newStatus});
                       }}
-                      className="w-36"
                       size="small"
                     >
                       <Option value="pending">Pending</Option>
@@ -441,5 +449,4 @@ const ManageOrders = () => {
 };
 
 export default ManageOrders;
-
 

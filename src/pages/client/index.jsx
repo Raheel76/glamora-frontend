@@ -8,5 +8,5 @@ import ProductDetailsPage from "./ProductDetail"
 import CheckoutPage from "./Checkout"
 import OrderConfirmationPage from "./OrderConfirmation"
 import UserOrdersPage from "./Orders"
-UserOrdersPage
+
 export { UserLayout, Home, UserProfile, MenProducts, MenShirts, MenPants, ProductDetailsPage, CheckoutPage, OrderConfirmationPage, UserOrdersPage } 

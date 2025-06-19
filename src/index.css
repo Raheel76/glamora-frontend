@@ -21,6 +21,9 @@ body {
 }
 
 /* ----------------------------- */
+body::-webkit-scrollbar {
+  display: none !important;
+}
 
 .error-text {
   color: red;
@@ -282,7 +285,7 @@ body {
 }
 
 .ant-table-content {
-  margin: 0px 10px !important;
+  padding: 0px 20px !important;
 }
 
 .truncate {
@@ -324,19 +327,37 @@ body {
   align-items: center !important;
 }
 
-.home-container::-webkit-scrollbar{
+.home-container::-webkit-scrollbar {
   display: none !important;
 }
+
 .ant-result {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.swiper{
+
+.swiper {
   padding: 30px 0px !important;
 }
+
+.ant-table-measure-row {
+  display: none !important;
+}
+
+.ant-table-wrapper .ant-table {
+  scrollbar-color: rgb(15, 23, 42) rgba(255, 255, 255, 0.06) !important;
+  
+}
+
+@media (max-width: 1440px) {
+  .modal-scroll {
+    height: calc(100vh - 128px);
+  }
+}
+
 @media (max-width: 767px) {
-    .ant-table {
+  .ant-table {
     width: 100%;
   }
 
@@ -355,8 +376,8 @@ body {
   }
 
   /* Ensure table headings and cells stay aligned */
-  .customs-table  .ant-table-thead > tr > th,
-  .customs-table  .ant-table-tbody > tr > td {
+  .customs-table .ant-table-thead>tr>th,
+  .customs-table .ant-table-tbody>tr>td {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
