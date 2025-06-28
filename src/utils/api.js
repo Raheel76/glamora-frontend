@@ -51,6 +51,12 @@ export const adminAPI = {
   updateOrderStatus: (id, status) => api.put(`/orders/admin/${id}/status`, { status }),
   getNotifications: () => api.get('/notifications/admin/all'),
   sendNotification: (data) => api.post('/notifications/admin/send', data),
+  processRefund: (data) => api.post('/wallet/refund', data),
+};
+
+export const walletAPI = {
+  getUserWallet: () => api.get('/wallet/user'),
+  getWalletTransactions: () => api.get('/wallet/user/transactions'),
 };
 
 export default api;

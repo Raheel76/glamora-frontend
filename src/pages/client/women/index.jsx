@@ -6,21 +6,21 @@ import { productsAPI } from '../../../utils/api';
 const { Content } = Layout;
 
 const subcategoryRoutes = {
-  shirt: '/men/shirts',
-  pants: '/men/pants',
-  shoes: '/men/shoes',
+  shirt: '/women/shirts',
+  pants: '/women/pants',
+  shoes: '/women/shoes',
 };
 
 function getSubcategoryRoute(subcategory) {
-  if (!subcategory) return '/men';
+  if (!subcategory) return '/women';
   const sub = subcategory.toLowerCase();
   if (sub.includes('shirt')) return subcategoryRoutes.shirt;
   if (sub.includes('pant')) return subcategoryRoutes.pants;
   if (sub.includes('shoe')) return subcategoryRoutes.shoes;
-  return '/men';
+  return '/women';
 }
 
-const MenProducts = () => {
+const WomenProducts = () => {
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [feelType, setFeelType] = useState('All');
@@ -37,7 +37,7 @@ const MenProducts = () => {
       try {
         setLoading(true);
         const response = await productsAPI.getAll();
-        const all = response.data.filter(p => p.category === 'Men');
+        const all = response.data.filter(p => p.category === 'Women');
         const shirts = all.filter(p => p.subcategory && p.subcategory.toLowerCase().includes('shirt')).slice(0, 3);
         const pants = all.filter(p => p.subcategory && p.subcategory.toLowerCase().includes('pant')).slice(0, 3);
         const shoes = all.filter(p => p.subcategory && p.subcategory.toLowerCase().includes('shoe')).slice(0, 3);
@@ -191,4 +191,5 @@ const MenProducts = () => {
   );
 };
 
-export default MenProducts;
+export default WomenProducts;
+

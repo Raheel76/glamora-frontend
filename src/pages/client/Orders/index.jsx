@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Layout, Card, Badge, Button, Spin, Empty, Divider, Modal, Image, Popconfirm, Pagination, Input } from 'antd';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Layout, Card, Badge, Button, Spin, Empty, Divider, Modal, Image, Popconfirm, Pagination, Input, Tabs, Select } from 'antd';
 import { Package, Eye, Calendar, CreditCard, MapPin, Phone, Mail, X, TruckElectric, Search, SearchIcon } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ordersAPI } from '../../../utils/api';
 import { OrderTracker } from '../../../components';
 
 const { Content } = Layout;
+const { TabPane } = Tabs;
+const { Option } = Select;
 
 const UserOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -17,12 +19,29 @@ const UserOrdersPage = () => {
   const [cancellingOrder, setCancellingOrder] = useState(null);
   const [searchQuery, setSearchQuery] = useState('')
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(6);
+  const [activeTab, setActiveTab] = useState('active');
+  const [statusFilter, setStatusFilter] = useState('all');
+
+  const contentRef = useRef(null)
 
   useEffect(() => {
     fetchOrders();
   }, []);
+
+  useEffect(() => {
+    const { highlightOrderId } = location.state || {};
+    if (highlightOrderId && orders.length > 0) {
+      const orderToView = orders.find(o => o._id === (highlightOrderId._id || highlightOrderId));
+      if (orderToView) {
+        handleViewOrder(orderToView);
+        // Clean up state to avoid modal popping up on refresh
+        navigate(location.pathname, { replace: true, state: {} });
+      }
+    }
+  }, [orders, location, navigate]);
 
   const fetchOrders = async () => {
     try {
@@ -99,23 +118,60 @@ const UserOrdersPage = () => {
     });
   };
 
-  const filteredOrders = useMemo(() => {
-    if (!searchQuery.trim()) return orders;
-    return orders.filter((order) =>
+  const activeOrders = useMemo(() => orders.filter(order => order.status !== 'cancelled'), [orders]);
+  const cancelledOrders = useMemo(() => orders.filter(order => order.status === 'cancelled'), [orders]);
+
+  const filteredActiveOrders = useMemo(() => {
+    let filtered = activeOrders;
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(order => order.status === statusFilter);
+    }
+    if (searchQuery.trim()) {
+      filtered = filtered.filter((order) =>
+        order.orderNumber.toLowerCase().includes(searchQuery.trim().toLowerCase())
+      );
+    }
+    return filtered;
+  }, [activeOrders, statusFilter, searchQuery]);
+
+  const filteredCancelledOrders = useMemo(() => {
+    if (!searchQuery.trim()) return cancelledOrders;
+    return cancelledOrders.filter((order) =>
       order.orderNumber.toLowerCase().includes(searchQuery.trim().toLowerCase())
     );
-  }, [orders, searchQuery]);
+  }, [cancelledOrders, searchQuery]);
+
+  const paginatedActiveOrders = useMemo(() => {
+    return filteredActiveOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  }, [filteredActiveOrders, currentPage, pageSize]);
+
+  const paginatedCancelledOrders = useMemo(() => {
+    return filteredCancelledOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  }, [filteredCancelledOrders, currentPage, pageSize]);
 
   const handleSearch = (value) => {
     setSearchQuery(value);
     setCurrentPage(1);
   };
 
-  const paginatedOrders = useMemo(() => {
-    return filteredOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-  }, [filteredOrders, currentPage, pageSize]);
+  const handleTabChange = (key) => {
+    setActiveTab(key);
+    setCurrentPage(1);
+  };
+
+  const handleStatusFilterChange = (value) => {
+    setStatusFilter(value);
+    setCurrentPage(1);
+    
+  };
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    if (contentRef.current) {
+      contentRef.current.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   if (loading) {
@@ -128,14 +184,28 @@ const UserOrdersPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Content className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <Content ref={contentRef} className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex justify-between items-center mb-8 ">
-
           <div >
             <h1 className="text-3xl font-bold text-gray-900">Order History</h1>
             <p className="text-gray-600 mt-2">Track and manage all your orders</p>
           </div>
-          <div className="">
+          <div className="flex gap-2 items-center">
+            {activeTab === 'active' && (
+              <Select
+                value={statusFilter}
+                onChange={handleStatusFilterChange}
+                style={{ width: 160 }}
+                size="large"
+              >
+                <Option value="all">All Statuses</Option>
+                <Option value="pending">Pending</Option>
+                <Option value="confirmed">Confirmed</Option>
+                <Option value="processing">Processing</Option>
+                <Option value="shipped">Shipped</Option>
+                <Option value="delivered">Delivered</Option>
+              </Select>
+            )}
             <Input
               placeholder="Search by order number"
               allowClear
@@ -147,147 +217,282 @@ const UserOrdersPage = () => {
             />
           </div>
         </div>
-
-        {orders.length === 0 ? (
-          <Card className="text-center py-12">
-            <Empty
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description={
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No orders found</h3>
-                  <p className="text-gray-500 mb-4">You haven't placed any orders yet.</p>
-                  <Button
-                    type="primary"
-                    size="large"
-                    onClick={() => navigate('/men/shirts')}
-                    className="bg-[#0F172A]"
-                  >
-                    Start Shopping
-                  </Button>
-                </div>
-              }
-            />
-          </Card>
-        ) : (
-          <div className="space-y-6">
-            {paginatedOrders.map((order) => (
-              <Card key={order._id} className={`shadow-sm hover:shadow-md transition-shadow ${order.status === 'cancelled' ? 'bg-red-200 cursor-not-allowed !border-red-200 ' : ''} `}>
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-4 mb-2">
-                      <div className="flex items-center gap-2">
-                        <Package size={20} className="text-gray-500" />
-                        <span className="font-semibold text-lg">Order #{order.orderNumber}</span>
-                      </div>
-                      <Badge
-                        color={getStatusColor(order.status)}
-                        text={getStatusText(order.status)}
-                        className="font-medium"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-                      <div className="flex items-center gap-1">
-                        <Calendar size={16} />
-                        <span>{formatDate(order.createdAt)}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <CreditCard size={16} />
-                        <span className="capitalize">{order.paymentMethod}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                      <span className="text-sm text-gray-600">
-                        {order.items.length} item{order.items.length > 1 ? 's' : ''}
-                      </span>
-                      <span className="text-lg font-bold text-green-600">
-                        Rs: {order.total.toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Button
-                      type="primary"
-                      icon={<Eye size={16} />}
-                      onClick={() => handleViewOrder(order)}
-                    >
-                      View Details
-                    </Button>
-
-                    <Button
-                      type="default"
-                      icon={<TruckElectric size={16} />}
-                      onClick={() => handleTrackOrder(order)}
-                      className="bg-green-50 !text-green-600 !border-green-200 hover:!bg-green-100"
-                    >
-                      Track Order
-                    </Button>
-
-                    {canCancelOrder(order) && (
-                      <Popconfirm
-                        title="Cancel Order"
-                        description="Are you sure you want to cancel this order?"
-                        onConfirm={() => handleCancelOrder(order._id)}
-                        okText="Yes, Cancel"
-                        cancelText="No"
-                        okButtonProps={{ danger: true }}
+        <Tabs activeKey={activeTab} onChange={handleTabChange}>
+          <TabPane tab="Active Orders" key="active">
+            {activeOrders.length === 0 ? (
+              <Card className="text-center py-12">
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No active orders found</h3>
+                      <p className="text-gray-500 mb-4">You haven't placed any active orders yet.</p>
+                      <Button
+                        type="primary"
+                        size="large"
+                        onClick={() => navigate('/men/shirts')}
+                        className="bg-[#0F172A]"
                       >
-                        <Button
-                          danger
-                          icon={<X size={16} />}
-                          className=' !bg-red-50 !text-red-600 !border-red-200 hover:!bg-red-100'
-                          loading={cancellingOrder === order._id}
-                        >
-                          Cancel
-                        </Button>
-                      </Popconfirm>
-                    )}
-                  </div>
-                </div>
-
-                {/* Quick preview of items */}
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <div className="flex gap-4 overflow-x-auto">
-                    {order.items.slice(0, 4).map((item, index) => (
-                      <div key={index} className="flex-shrink-0">
-                        <img
-                          src={`http://localhost:5000${item.image}`}
-                          alt={item.name}
-                          className="w-16 h-16 object-cover rounded"
-                          onError={(e) => {
-                            e.target.src = 'https://via.placeholder.com/64x64?text=No+Image';
-                          }}
-                        />
-                      </div>
-                    ))}
-                    {order.items.length > 4 && (
-                      <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
-                        <span className="text-sm text-gray-500">+{order.items.length - 4}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                        Start Shopping
+                      </Button>
+                    </div>
+                  }
+                />
               </Card>
-            ))}
-          </div>
-        )}
+            ) : (
+              <div className="space-y-6">
+                {paginatedActiveOrders.map((order) => (
+                  <Card key={order._id} className={`shadow-sm hover:shadow-md transition-shadow ${order.status === 'cancelled' ? 'bg-red-200 cursor-not-allowed !border-red-200 ' : ''} `}>
+                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-4 mb-2">
+                          <div className="flex items-center gap-2">
+                            <Package size={20} className="text-gray-500" />
+                            <span className="font-semibold text-lg">Order #{order.orderNumber}</span>
+                          </div>
+                          <Badge
+                            color={getStatusColor(order.status)}
+                            text={getStatusText(order.status)}
+                            className="font-medium"
+                          />
+                        </div>
 
-        <div className="mt-12 flex justify-center">
-          <Pagination
-            current={currentPage}
-            pageSize={pageSize}
-            total={orders.length}
-            onChange={handlePageChange}
-            showSizeChanger={false}
-            showQuickJumper={false}
-            showTotal={(total, range) =>
-              `${range[0]}-${range[1]} of ${total} items`
-            }
-            className="bg-white p-4 rounded-lg shadow-sm"
-          />
-        </div>
+                        <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                          <div className="flex items-center gap-1">
+                            <Calendar size={16} />
+                            <span>{formatDate(order.createdAt)}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <CreditCard size={16} />
+                            <span className="capitalize">{order.paymentMethod}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                          <span className="text-sm text-gray-600">
+                            {order.items.length} item{order.items.length > 1 ? 's' : ''}
+                          </span>
+                          <span className="text-lg font-bold text-green-600">
+                            Rs: {order.total.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Button
+                          type="primary"
+                          icon={<Eye size={16} />}
+                          onClick={() => handleViewOrder(order)}
+                        >
+                          View Details
+                        </Button>
+
+                        <Button
+                          type="default"
+                          icon={<TruckElectric size={16} />}
+                          onClick={() => handleTrackOrder(order)}
+                          className="bg-green-50 !text-green-600 !border-green-200 hover:!bg-green-100"
+                        >
+                          Track Order
+                        </Button>
+
+                        {canCancelOrder(order) && (
+                          <Popconfirm
+                            title="Cancel Order"
+                            description="Are you sure you want to cancel this order?"
+                            onConfirm={() => handleCancelOrder(order._id)}
+                            okText="Yes, Cancel"
+                            cancelText="No"
+                            okButtonProps={{ danger: true }}
+                          >
+                            <Button
+                              danger
+                              icon={<X size={16} />}
+                              className=' !bg-red-50 !text-red-600 !border-red-200 hover:!bg-red-100'
+                              loading={cancellingOrder === order._id}
+                            >
+                              Cancel
+                            </Button>
+                          </Popconfirm>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Quick preview of items */}
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <div className="flex gap-4 overflow-x-auto">
+                        {order.items.slice(0, 4).map((item, index) => (
+                          <div key={index} className="flex-shrink-0">
+                            <img
+                              src={`http://localhost:5000${item.image}`}
+                              alt={item.name}
+                              className="w-16 h-16 object-cover rounded"
+                              onError={(e) => {
+                                e.target.src = 'https://via.placeholder.com/64x64?text=No+Image';
+                              }}
+                            />
+                          </div>
+                        ))}
+                        {order.items.length > 4 && (
+                          <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
+                            <span className="text-sm text-gray-500">+{order.items.length - 4}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+            <div className="mt-12 flex justify-center">
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={filteredActiveOrders.length}
+                onChange={handlePageChange}
+                showSizeChanger={false}
+                showQuickJumper={false}
+                showTotal={(total, range) =>
+                  `${range[0]}-${range[1]} of ${total} items`
+                }
+                className="bg-white p-4 rounded-lg shadow-sm"
+              />
+            </div>
+          </TabPane>
+          <TabPane tab="Canceled Orders" key="cancelled">
+            {cancelledOrders.length === 0 ? (
+              <Card className="text-center py-12">
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No canceled orders found</h3>
+                      <p className="text-gray-500 mb-4">You haven't canceled any orders yet.</p>
+                    </div>
+                  }
+                />
+              </Card>
+            ) : (
+              <div className="space-y-6">
+                {paginatedCancelledOrders.map((order) => (
+                  <Card key={order._id} className={`shadow-sm hover:shadow-md transition-shadow bg-red-200 cursor-not-allowed !border-red-200`}>
+                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-4 mb-2">
+                          <div className="flex items-center gap-2">
+                            <Package size={20} className="text-gray-500" />
+                            <span className="font-semibold text-lg">Order #{order.orderNumber}</span>
+                          </div>
+                          <Badge
+                            color={getStatusColor(order.status)}
+                            text={getStatusText(order.status)}
+                            className="font-medium"
+                          />
+                        </div>
+
+                        <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                          <div className="flex items-center gap-1">
+                            <Calendar size={16} />
+                            <span>{formatDate(order.createdAt)}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <CreditCard size={16} />
+                            <span className="capitalize">{order.paymentMethod}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                          <span className="text-sm text-gray-600">
+                            {order.items.length} item{order.items.length > 1 ? 's' : ''}
+                          </span>
+                          <span className="text-lg font-bold text-green-600">
+                            Rs: {order.total.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Button
+                          type="primary"
+                          icon={<Eye size={16} />}
+                          onClick={() => handleViewOrder(order)}
+                        >
+                          View Details
+                        </Button>
+
+                        <Button
+                          type="default"
+                          icon={<TruckElectric size={16} />}
+                          onClick={() => handleTrackOrder(order)}
+                          className="bg-green-50 !text-green-600 !border-green-200 hover:!bg-green-100"
+                        >
+                          Track Order
+                        </Button>
+
+                        {canCancelOrder(order) && (
+                          <Popconfirm
+                            title="Cancel Order"
+                            description="Are you sure you want to cancel this order?"
+                            onConfirm={() => handleCancelOrder(order._id)}
+                            okText="Yes, Cancel"
+                            cancelText="No"
+                            okButtonProps={{ danger: true }}
+                          >
+                            <Button
+                              danger
+                              icon={<X size={16} />}
+                              className=' !bg-red-50 !text-red-600 !border-red-200 hover:!bg-red-100'
+                              loading={cancellingOrder === order._id}
+                            >
+                              Cancel
+                            </Button>
+                          </Popconfirm>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Quick preview of items */}
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <div className="flex gap-4 overflow-x-auto">
+                        {order.items.slice(0, 4).map((item, index) => (
+                          <div key={index} className="flex-shrink-0">
+                            <img
+                              src={`http://localhost:5000${item.image}`}
+                              alt={item.name}
+                              className="w-16 h-16 object-cover rounded"
+                              onError={(e) => {
+                                e.target.src = 'https://via.placeholder.com/64x64?text=No+Image';
+                              }}
+                            />
+                          </div>
+                        ))}
+                        {order.items.length > 4 && (
+                          <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
+                            <span className="text-sm text-gray-500">+{order.items.length - 4}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+            <div className="mt-12 flex justify-center">
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={filteredCancelledOrders.length}
+                onChange={handlePageChange}
+                showSizeChanger={false}
+                showQuickJumper={false}
+                showTotal={(total, range) =>
+                  `${range[0]}-${range[1]} of ${total} items`
+                }
+                className="bg-white p-4 rounded-lg shadow-sm"
+              />
+            </div>
+          </TabPane>
+        </Tabs>
 
         {/* Order Details Modal */}
         <Modal

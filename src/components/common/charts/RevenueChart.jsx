@@ -1,22 +1,23 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const data = [
-  { month: 'Jan', revenue: 4000 },
-  { month: 'Feb', revenue: 4500 },
-  { month: 'Mar', revenue: 6000 },
-  { month: 'Apr', revenue: 6500 },
-  { month: 'May', revenue: 7000 },
-  { month: 'Jun', revenue: 8500 },
-  { month: 'Jul', revenue: 9800 },
-  { month: 'Aug', revenue: 11000 },
-  { month: 'Sep', revenue: 10500 },
-  { month: 'Oct', revenue: 12000 },
-  { month: 'Nov', revenue: 14000 },
-  { month: 'Dec', revenue: 16000 },
-];
+const RevenueChart = ({ stats }) => {
+  // Example: If you have monthly revenue in stats, use it. Otherwise, fallback to static data.
+  const data = stats && stats.monthlyRevenue ? stats.monthlyRevenue : [
+    { month: 'Jan', revenue: 4000 },
+    { month: 'Feb', revenue: 4500 },
+    { month: 'Mar', revenue: 6000 },
+    { month: 'Apr', revenue: 6500 },
+    { month: 'May', revenue: 7000 },
+    { month: 'Jun', revenue: 8500 },
+    { month: 'Jul', revenue: 9800 },
+    { month: 'Aug', revenue: 11000 },
+    { month: 'Sep', revenue: 10500 },
+    { month: 'Oct', revenue: 12000 },
+    { month: 'Nov', revenue: 14000 },
+    { month: 'Dec', revenue: 16000 },
+  ];
 
-const RevenueChart = () => {
   return (
     <div className="h-72">
       <ResponsiveContainer width="100%" height="100%">

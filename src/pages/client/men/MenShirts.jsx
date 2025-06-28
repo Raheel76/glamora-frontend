@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Layout, Breadcrumb, Pagination, Spin, message } from 'antd';
 import { ChevronRight, Home, Tag } from 'lucide-react';
 import { SearchBar, ShirtGrid, SortOptions } from '../../../components';
@@ -18,17 +18,19 @@ const MenShirts = () => {
   const [pageSize] = useState(6); // Show 6 items per page
   const [paginatedProducts, setPaginatedProducts] = useState([]);
 
+  const contentRef = useRef(null);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
         const response = await productsAPI.getAll();
 
-        const menShirts = response.data.filter(
+        const menPants = response.data.filter(
           product => product.category === 'Men' && product.subcategory.toLowerCase().includes('shirt')
         );
-        setProducts(menShirts);
-        setFilteredProducts(menShirts);
+        setProducts(menPants);
+        setFilteredProducts(menPants);
       } catch (error) {
         console.error('Error fetching products:', error);
         message.error('Failed to load products');
@@ -87,8 +89,11 @@ const MenShirts = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    // Scroll to top when page changes
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (contentRef.current) {
+      contentRef.current.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   if (loading) {
@@ -101,7 +106,7 @@ const MenShirts = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <Content className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <Content ref={contentRef} className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Breadcrumb */}
         <Breadcrumb
           className="mb-6"
@@ -157,7 +162,7 @@ const MenShirts = () => {
         {/* Product Grid */}
         {paginatedProducts.length > 0 ? (
           <>
-            <ShirtGrid shirts={paginatedProducts} />
+            <ShirtGrid productData={paginatedProducts} />
             
             {/* Pagination */}
             <div className="mt-12 flex justify-center">

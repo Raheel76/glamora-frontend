@@ -1,6 +1,6 @@
 import React from 'react';
 import { Drawer, Badge, Button, List, Typography, Empty, Spin, message } from 'antd';
-import { Bell, Package, CheckCircle, X } from 'lucide-react';
+import { Bell, Package, CheckCircle, X, Star } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -18,7 +18,7 @@ const NotificationCenter = () => {
     removeNotification,
   } = StoreUse();
 
-  const [loading, setLoading] = React.useState(false);
+  const [loading] = React.useState(false);
   const navigate = useNavigate();
 
   const handleNotificationClick = async (notification) => {
@@ -44,6 +44,11 @@ const NotificationCenter = () => {
       } else if (notification.type === 'promotion') {
         setNotificationOpen(false);
         navigate('/men/shirts');
+      } else if (notification.type === 'review_reminder') {
+        if (notification.productId) {
+          setNotificationOpen(false);
+          navigate(`/product/${notification.productId._id}`, { state: { scrollToReviews: true } });
+        }
       }
     } catch (error) {
       console.error('Error marking notification as read:', error);
@@ -90,6 +95,8 @@ const NotificationCenter = () => {
         return <CheckCircle size={20} className="text-green-500" />;
       case 'promotion':
         return <Bell size={20} className="text-purple-500" />;
+      case 'review_reminder':
+        return <Star size={20} className="text-yellow-500" />;
       default:
         return <Bell size={20} className="text-gray-500" />;
     }

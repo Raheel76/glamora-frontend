@@ -68,18 +68,14 @@ const ViewModal = ({ visible, product, onCancel }) => {
       onCancel={onCancel}
       footer={null}
       width={1000}
+      centered
       className="view-product-modal"
     >
       <Row gutter={[16, 16]} className="mt-3">
         <Col span={8}>
           <h3 className="text-lg font-semibold text-[#1677ff] mb-2">Images:</h3>
           <div
-            style={{
-              maxHeight: '600px',
-              overflowY: 'auto',
-              scrollBehavior: 'smooth',
-              paddingRight: '8px',
-            }}
+             className='modal-scroll'
           >
             {imageUrls.length > 0 ? (
               imageUrls.map((url, index) => (
@@ -106,12 +102,7 @@ const ViewModal = ({ visible, product, onCancel }) => {
         <Col span={16}>
           <h3 className="text-lg font-semibold text-[#1677ff] mb-2">Details:</h3>
           <div
-            style={{
-              maxHeight: '600px',
-              overflowY: 'auto',
-              scrollBehavior: 'smooth',
-              paddingRight: '8px',
-            }}
+            className='modal-scroll'
           >
             <Descriptions column={1} bordered size="small">
               <Descriptions.Item label="ID">{product._id?.slice(-6)}</Descriptions.Item>

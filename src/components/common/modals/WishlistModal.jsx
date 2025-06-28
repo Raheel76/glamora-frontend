@@ -10,6 +10,7 @@ const WishlistModal = () => {
   const handleAddToCart = (item) => {
     addToCart(item);
     setCartOpen(true);
+    setWishlistOpen(false);
     toast.success(`${item.name} added to cart!`);
   };
 

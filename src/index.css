@@ -138,6 +138,18 @@ body::-webkit-scrollbar {
   background: #f1f1f1;
 }
 
+.hero-img {
+  background-image: url(/assets/new-man-shirts-and-polos-on-sale.jpg);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 100vh;
+}
+
+.swiper-slide {
+  height: auto !important;
+}
+
 .ant-modal-title {
   color: #000;
   font-size: 32px !important;
@@ -169,6 +181,10 @@ body::-webkit-scrollbar {
 .main-modal .ant-select-selector {
   border-radius: 8px !important;
 
+}
+
+.state-select {
+  height: 30px !important;
 }
 
 .main-modal .ant-input-affix-wrapper .ant-input {
@@ -347,12 +363,22 @@ body::-webkit-scrollbar {
 
 .ant-table-wrapper .ant-table {
   scrollbar-color: rgb(15, 23, 42) rgba(255, 255, 255, 0.06) !important;
-  
+
+}
+
+.sidebar-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: calc(100vh - 180px);
+}
+
+.sidebar-scroll::-webkit-scrollbar {
+  display: none !important;
 }
 
 @media (max-width: 1440px) {
   .modal-scroll {
-    height: calc(100vh - 128px);
+    height: calc(100vh - 158px);
   }
 }
 

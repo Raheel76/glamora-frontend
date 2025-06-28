@@ -2,9 +2,9 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ForgotPassword, Login, ResetPassword, Signup, VerifyOtp } from './auth';
-import { CheckoutPage, Home, MenPants, MenProducts, MenShirts, OrderConfirmationPage,  ProductDetailsPage, UserLayout, UserOrdersPage, UserProfile } from './pages/client';
-import { AdminLayout, AdminProfile, AdminWallet, Dashboard, Kids, ManageOrders, Men, Women, } from './pages/admin';
-import { AuthRoute, ProtectedRoute } from './routes';
+import { CheckoutPage, Home, MenPants, MenProducts, MenShirts, MenShoes, OrderConfirmationPage,  ProductDetailsPage, UserLayout, UserOrdersPage, UserProfile, UserWallet, WomenPants, WomenProducts, WomenShirts, WomenShoes } from './pages/client';
+import { AdminLayout, AdminProfile, AdminWallet, Dashboard, Kids, ManageOrders, Men, Women, Reviews } from './pages/admin';
+import { AuthProvider, AuthRoute, ProtectedRoute } from './routes';
 import { NotificationManager } from './components/common';
 
 function App() {
@@ -34,10 +34,16 @@ function App() {
             { path: '/product/:id', element: <ProductDetailsPage /> },
             { path: '/checkout', element: <CheckoutPage /> },
             { path: '/men/shirts', element: <MenShirts /> },
-            { path: '/men/shirts', element: <MenShirts /> },
+            { path: '/men/pants', element: <MenPants /> },
+            { path: '/men/shoes', element: <MenShoes /> },
+            { path: '/women', element: <WomenProducts /> },
+            { path: '/women/shirts', element: <WomenShirts /> },
+            { path: '/women/pants', element: <WomenPants /> },
+            { path: '/women/shoes', element: <WomenShoes /> },
             { path: '/order-confirmation', element: <OrderConfirmationPage /> },
             { path: '/profile', element: <UserProfile /> },
             { path: '/my-orders', element: <UserOrdersPage /> },
+            { path: '/wallet', element: <UserWallet /> },
 
           ],
         },
@@ -59,6 +65,8 @@ function App() {
             { path: 'manage-orders', element: <ManageOrders /> },
             { path: 'wallet', element: <AdminWallet /> },
             { path: 'notifications', element: <NotificationManager /> },
+            { path: 'reviews', element: <Reviews /> },
+            { path: 'wallet', element: <AdminWallet /> },
           ],
         },
       ],
@@ -71,8 +79,10 @@ function App() {
 
   return (
     <>
+    <AuthProvider>
       <RouterProvider router={router} />
       <ToastContainer position="top-right" draggable theme="light" limit={3} />
+    </AuthProvider>
     </>
   );
 }

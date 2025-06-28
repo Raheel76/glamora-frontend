@@ -28,7 +28,10 @@ const UserLayout = () => {
                 <Header />
                 <CartDrawer />
                 <WishlistModal />
+                <div className=" pt-20">
+
                 <Outlet />
+                </div>
                 <Footer />
             </div>
          </Elements>

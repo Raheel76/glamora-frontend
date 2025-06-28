@@ -43,7 +43,6 @@ const StripePaymentForm = ({ amount, onSuccess, onError, loading: parentLoading 
         },
         body: JSON.stringify({
           amount: Math.round(amount * 100), // Convert to cents
-          paymentMethodId: paymentMethod.id,
         }),
       });
 
@@ -55,8 +54,12 @@ const StripePaymentForm = ({ amount, onSuccess, onError, loading: parentLoading 
         return;
       }
 
-      // Confirm payment
-      const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(clientSecret);
+      // Confirm payment with card details
+      const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+        },
+      });
 
       if (confirmError) {
         setError(confirmError.message);

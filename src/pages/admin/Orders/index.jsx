@@ -216,7 +216,7 @@ const ManageOrders = () => {
   }
 
   return (
-    <Layout className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white !rounded-lg ">
       <Content className="p-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Order Management</h1>
@@ -444,7 +444,7 @@ const ManageOrders = () => {
           )}
         </Modal>
       </Content>
-    </Layout>
+    </div>
   );
 };
 

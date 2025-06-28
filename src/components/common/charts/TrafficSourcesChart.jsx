@@ -1,17 +1,18 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const data = [
-  { name: 'Organic Search', value: 42 },
-  { name: 'Direct', value: 28 },
-  { name: 'Referral', value: 15 },
-  { name: 'Social Media', value: 10 },
-  { name: 'Other', value: 5 },
-];
-
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#6B7280'];
 
-const TrafficSourcesChart = () => {
+const TrafficSourcesChart = ({ stats }) => {
+  // Example: If you have traffic sources in stats, use it. Otherwise, fallback to static data.
+  const data = stats && stats.trafficSources ? stats.trafficSources : [
+    { name: 'Organic Search', value: 42 },
+    { name: 'Direct', value: 28 },
+    { name: 'Referral', value: 15 },
+    { name: 'Social Media', value: 10 },
+    { name: 'Other', value: 5 },
+  ];
+
   return (
     <div className="h-72">
       <ResponsiveContainer width="100%" height="100%">

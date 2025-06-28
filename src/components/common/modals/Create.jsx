@@ -16,9 +16,9 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
   const [fileList, setFileList] = useState([]);
 
   const subcategoryOptions = {
-    Men: ['Shirts', 'Pants'],
-    Women: ['Dresses', 'Tops'],
-    Kids: ['T-Shirts', 'Shorts'],
+    Men: ['Shirts', 'Pants', 'Shoes'],
+    Women: ['Shirts', 'Pants', 'Shoes'],
+    Kids: ['T-Shirts', 'Shorts', 'Shoes'],
   };
 
   const showModal = () => {
@@ -147,6 +147,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
         footer={null}
         width={1000}
         className="main-modal"
+        centered
       >
         <Form
           form={form}
@@ -190,7 +191,6 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
                 <Form.Item
                   name="category"
                   label="Category"
-                  rules={[{ required: true, message: 'Please select category' }]}
                 >
                   <Select placeholder="Select Category" disabled>
                     <Option value="Men">Men</Option>
@@ -226,6 +226,18 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
               </Col>
               <Col span={12}>
                 <Form.Item
+                  name="stock"
+                  label="Stock"
+                  rules={[{ required: !isEditMode, message: 'Please enter stock quantity' }]}
+                >
+                  <Input type="number" min={0} placeholder="e.g., 10" />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
                   name="description"
                   label="Description"
                   rules={[{ required: true, message: 'Please enter description' }]}
@@ -236,10 +248,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
                   />
                 </Form.Item>
               </Col>
-            </Row>
-
-            <Row gutter={16}>
-              <Col span={24}>
+              <Col span={12}>
                 <Form.Item
                   name="images"
                   label="Images"

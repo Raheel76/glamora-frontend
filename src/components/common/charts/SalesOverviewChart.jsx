@@ -1,16 +1,17 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const data = [
-  { name: 'Jan', target: 4000, actual: 4500 },
-  { name: 'Feb', target: 5000, actual: 4800 },
-  { name: 'Mar', target: 5500, actual: 6200 },
-  { name: 'Apr', target: 6000, actual: 5800 },
-  { name: 'May', target: 6500, actual: 7100 },
-  { name: 'Jun', target: 7000, actual: 8500 },
-];
+const SalesOverviewChart = ({ stats }) => {
+  // Example: If you have monthly sales in stats, use it. Otherwise, fallback to static data.
+  const data = stats && stats.monthlySales ? stats.monthlySales : [
+    { name: 'Jan', target: 4000, actual: 4500 },
+    { name: 'Feb', target: 5000, actual: 4800 },
+    { name: 'Mar', target: 5500, actual: 6200 },
+    { name: 'Apr', target: 6000, actual: 5800 },
+    { name: 'May', target: 6500, actual: 7100 },
+    { name: 'Jun', target: 7000, actual: 8500 },
+  ];
 
-const SalesOverviewChart = () => {
   return (
     <div className="h-72">
       <ResponsiveContainer width="100%" height="100%">

@@ -16,7 +16,7 @@ const Men = () => {
       setLoading(true)
       const response = await axios.get('http://localhost:5000/api/products');
       setProducts(response.data);
-    } catch (error) {
+    } catch {
       toast.error('Error fetching products');
     } finally {
       setLoading(false)
@@ -43,7 +43,7 @@ const Men = () => {
       await axios.delete(`http://localhost:5000/api/products/${id}`);
       setProducts(products.filter(product => product._id !== id));
       toast.success('Product deleted successfully');
-    } catch (error) {
+    } catch {
       toast.error('Error deleting product');
     }
   };
@@ -58,13 +58,14 @@ const Men = () => {
 
   const shirtsData = products.filter(product => product.subcategory === 'Shirts' && product.category === 'Men');
   const pantsData = products.filter(product => product.subcategory === 'Pants' && product.category === 'Men');
+  const shoesData = products.filter(product => product.subcategory === 'Shoes' && product.category === 'Men');
+
 
   const columns = [
     {
       title: 'Image',
       dataIndex: 'images',
       key: 'images',
-      width: 160,
       render: (images) => (
         <div className='w-14 h-14'>
           <img
@@ -89,6 +90,13 @@ const Men = () => {
       dataIndex: 'name',
       key: 'name',
       className: 'center-column',
+    },
+    {
+      title: 'Stock',
+      dataIndex: 'stock',
+      key: 'stock',
+      className: 'center-column',
+      render: (stock) => stock || 'N/A',
     },
     {
       title: 'Category',
@@ -130,6 +138,36 @@ const Men = () => {
       render: (sizes) => (sizes && sizes.length > 0 ? sizes.join(', ') : 'N/A'),
     },
     {
+      title: 'Avg Rating',
+      key: 'reviewAvg',
+      className: 'center-column',
+      render: (_, record) => (
+        <span>
+          {record.reviewCount > 0 ? (
+            <>
+              <div className="flex items-center justify-center ">
+                <span className="mr-1">{Number(record.reviewAvg).toFixed(1)}</span>
+                <span role="img" aria-label="star" className=' text-amber-500' >
+                  <iconify-icon icon="mingcute:star-fill"></iconify-icon>
+                </span>
+              </div>
+            </>
+          ) : (
+            <span className="text-gray-400">No reviews</span>
+          )}
+        </span>
+      ),
+    },
+
+    {
+      title: 'Reviews',
+      key: 'reviewCount',
+      className: 'center-column',
+      render: (_, record) => (
+        <span>{record.reviewCount}</span>
+      ),
+    },
+    {
       title: 'Actions',
       key: 'actions',
       className: 'center-column',
@@ -156,7 +194,7 @@ const Men = () => {
     },
   ];
 
- if (loading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spin size="large" />
@@ -164,7 +202,7 @@ const Men = () => {
     );
   }
   return (
-    <div className="container mx-auto  md:px-4">
+    <div className="container mx-auto ">
       <div className="flex xs:flex-col gap-3 justify-between mb-8">
         <h2 className="text-3xl font-bold">Men Products</h2>
         <CreateModal
@@ -180,14 +218,14 @@ const Men = () => {
       {shirtsData.length === 0 ? (
         <Empty description="No Men Shirts Available" />
       ) : (
-        <div className="product-table overflow-hidden py-4">
+        <div className="product-table overflow-hidden bg-white p-4">
           <Table
             columns={columns}
             dataSource={shirtsData}
             rowKey="_id"
             pagination={{ pageSize: 5 }}
             className=' overflow-x-auto'
-                   scroll={{ x: 'max-content' }}
+            scroll={{ x: 'max-content' }}
 
           />
         </div>
@@ -199,10 +237,30 @@ const Men = () => {
       {pantsData.length === 0 ? (
         <Empty description="No Men Pants Available" />
       ) : (
-        <div className="product-table  overflow-hidden ">
+        <div className="product-table  overflow-hidden  bg-white p-4 ">
           <Table
             columns={columns}
             dataSource={pantsData}
+            rowKey="_id"
+            className="customs-table  overflow-x-auto "
+            rowClassName={() => "custom-row"}
+            pagination={{ pageSize: 5 }}
+            scroll={{ x: 'max-content' }}
+
+          />
+        </div>
+      )}
+
+      <div>
+        <h1 className="text-3xl font-bold my-8 text-center">Men Shoes</h1>
+      </div>
+      {shoesData.length === 0 ? (
+        <Empty description="No Men Pants Available" />
+      ) : (
+        <div className="product-table  overflow-hidden  bg-white p-4 ">
+          <Table
+            columns={columns}
+            dataSource={shoesData}
             rowKey="_id"
             className="customs-table  overflow-x-auto "
             rowClassName={() => "custom-row"}

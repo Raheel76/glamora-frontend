@@ -37,6 +37,7 @@ const AuthRoute = () => {
   if (isAuthenticated) {
     return userRole === 'admin' ? <Navigate to="/admin" replace /> : <Navigate to="/" replace />;
   }
+  
 
   return <Outlet />;
 };

@@ -2,13 +2,16 @@ import { Icon } from '@iconify/react/dist/iconify.js';
 import { Badge, Dropdown, Space, Spin } from 'antd'
 import axios from 'axios';
 import { Bell, Heart, Mail, ShoppingBag, User, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import { StoreUse } from '../../../components';
+import { AuthContext } from '../../../routes/AuthProvider';
 
 const Header = () => {
-  const { cart, favorites, setCartOpen, setWishlistOpen, notifications, setNotificationOpen,fetchNotifications } = StoreUse();
+  const { cart, favorites, setCartOpen, setWishlistOpen, notifications, setNotificationOpen, fetchNotifications } = StoreUse();
+  const { isAuthenticated, userRole, userEmail } = useContext(AuthContext);
+
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -30,11 +33,17 @@ const Header = () => {
   };
 
   // Navigation categories data
-  const navCategories = [
+  const navCategories =[
     {
       name: 'Men',
       path: '/men',
       items: [
+        {
+          label: 'All',
+          key: 'all',
+          path: '/men',
+          onClick: () => navigate('/men')
+        },
         {
           label: 'Shirts',
           key: 'men-shirts',
@@ -53,12 +62,6 @@ const Header = () => {
           path: '/men/shoes',
           onClick: () => navigate('/men/shoes')
         },
-        {
-          label: 'Accessories',
-          key: 'men-accessories',
-          path: '/men/accessories',
-          onClick: () => navigate('/men/accessories')
-        }
       ]
     },
     {
@@ -66,22 +69,22 @@ const Header = () => {
       path: '/women',
       items: [
         {
-          label: 'Dresses',
+          label: 'All',
+          key: 'all',
+          path: '/women',
+          onClick: () => navigate('/women')
+        },
+        {
+          label: 'Shirts',
           key: 'women-dresses',
-          path: '/women/dresses',
-          onClick: () => navigate('/women/dresses')
+          path: '/women/shirts',
+          onClick: () => navigate('/women/shirts')
         },
         {
-          label: 'Tops',
-          key: 'women-tops',
-          path: '/women/tops',
-          onClick: () => navigate('/women/tops')
-        },
-        {
-          label: 'Skirts',
-          key: 'women-skirts',
-          path: '/women/skirts',
-          onClick: () => navigate('/women/skirts')
+          label: 'Pants',
+          key: 'women-pants',
+          path: '/women/pants',
+          onClick: () => navigate('/women/pants')
         },
         {
           label: 'Shoes',
@@ -91,39 +94,55 @@ const Header = () => {
         }
       ]
     },
-    {
-      name: 'Kids',
-      path: '/kids',
-      items: [
-        {
-          label: 'Boys',
-          key: 'kids-boys',
-          path: '/kids/boys',
-          onClick: () => navigate('/kids/boys')
-        },
-        {
-          label: 'Girls',
-          key: 'kids-girls',
-          path: '/kids/girls',
-          onClick: () => navigate('/kids/girls')
-        },
-        {
-          label: 'Toys',
-          key: 'kids-toys',
-          path: '/kids/toys',
-          onClick: () => navigate('/kids/toys')
-        },
-        {
-          label: 'Accessories',
-          key: 'kids-accessories',
-          path: '/kids/accessories',
-          onClick: () => navigate('/kids/accessories')
-        }
-      ]
-    }
+    // {
+    //   name: 'Kids',
+    //   path: '/kids',
+    //   items: [
+    //     {
+    //       label: 'Boys',
+    //       key: 'kids-boys',
+    //       path: '/kids/boys',
+    //       onClick: () => navigate('/kids/boys')
+    //     },
+    //     {
+    //       label: 'Girls',
+    //       key: 'kids-girls',
+    //       path: '/kids/girls',
+    //       onClick: () => navigate('/kids/girls')
+    //     },
+    //     {
+    //       label: 'Toys',
+    //       key: 'kids-toys',
+    //       path: '/kids/toys',
+    //       onClick: () => navigate('/kids/toys')
+    //     },
+    //     {
+    //       label: 'Accessories',
+    //       key: 'kids-accessories',
+    //       path: '/kids/accessories',
+    //       onClick: () => navigate('/kids/accessories')
+    //     }
+    //   ]
+    // }
   ];
 
-   const profileItems = [
+  const profileItems =  userRole === 'admin' ? [
+    {
+      key: '1',
+      label: userEmail,
+      disabled: true,
+    },
+    {
+      key: '2',
+      label: <Link to="/admin">Back to Admin Dashboard</Link>,
+    },
+    {
+      key: '4',
+      label: <span className='text-red-600'>Logout</span>,
+      icon: <X size={20} className='text-red-600' />,
+      onClick: handleLogout,
+    },
+  ] : [
     {
       key: '1',
       label: <span>{profile?.email}</span>,
@@ -142,12 +161,18 @@ const Header = () => {
       onClick: () => navigate('/profile')
     },
     {
+      key: 'wallet',
+      label: 'My Wallet',
+      icon: <Icon icon="icon-park-outline:wallet" width="20" />,
+      onClick: () => navigate('/wallet')
+    },
+    {
       key: '4',
       label: <span className='text-red-600'>Logout</span>,
       icon: <X size={20} className='text-red-600' />,
       onClick: handleLogout,
     },
-     
+
   ];
   const unreadNotifications = Array.isArray(notifications) ? notifications.filter(n => !n.read).length : 0;
 
@@ -161,7 +186,7 @@ const Header = () => {
     return location.pathname === itemPath;
   };
 
-   useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -187,7 +212,7 @@ const Header = () => {
   }, [fetchNotifications]);
 
   return (
-    <div className="flex justify-between items-center h-20 px-8 shadow-md bg-[#0f172a]">
+    <div className="flex justify-between items-center h-20 px-8 shadow-lg fixed w-full top-0 z-50 bg-[#0f172a]">
       <Link to='/' className="w-[160px] h-14">
         <img src="/assets/glamLogo.png" alt="header logo" className='size-full' />
       </Link>
@@ -236,48 +261,58 @@ const Header = () => {
         {loading ? (
           <Spin />
         ) : (
-          <Dropdown menu={{ items: profileItems }} >
-            <div onClick={(e) => e.preventDefault()} className='flex items-center gap-3 cursor-pointer'>
-              <div className="flex items-center gap-2">
-                <div className='w-10 h-10'>
-                  <img
-                    src={profile?.profileImage ?
-                      `http://localhost:5000${profile.profileImage}` :
-                      "/img/default-profile.png"
-                    }
-                    alt="Profile"
-                    className="object-cover size-full rounded-full"
-                  />
+          <>
+          {isAuthenticated && (
+              <Dropdown menu={{ items: profileItems }} trigger={['hover']}>
+                <div onClick={(e) => e.preventDefault()} className='flex items-center gap-3 cursor-pointer'>
+                  <div className="flex items-center gap-2">
+                    <div className='w-10 overflow-hidden h-10'>
+                      <img
+                        src={profile?.profileImage ?
+                          `http://localhost:5000${profile.profileImage}` :
+                          "/img/default-profile.png"
+                        }
+                        alt="Profile"
+                        className="object-cover size-full rounded-full"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[14px] text-white font-medium">
+                        {`${profile?.firstName} ${profile?.lastName}`}
+                      </span>
+                    </div>
+                  </div>
+                  <Icon icon="ant-design:down-outlined" className=' text-white' />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-[14px] text-white font-medium">
-                    {`${profile?.firstName} ${profile?.lastName}`}
-                  </span>
+              </Dropdown>
+            )}
+            {isAuthenticated && userRole === 'user' && (
+              <>
+                <div className="flex items-center gap-4">
+                  <Badge count={unreadNotifications} size="small">
+                    <Bell
+                      onClick={() => setNotificationOpen(true)}
+                      className="w-6 h-6 text-white cursor-pointer hover:text-[#FF6B6B]"
+                    />
+                  </Badge>
+                  <Badge count={favorites.length} size="small">
+                    <Heart onClick={() => setWishlistOpen(true)} className="w-6 h-6 text-white cursor-pointer" />
+                  </Badge>
+
+                  <Badge count={cart.length} size="small">
+                    <ShoppingBag
+                      className="w-6 h-6 text-white cursor-pointer"
+                      onClick={() => setCartOpen(true)}
+                    />
+                  </Badge>
                 </div>
-              </div>
-              <Icon icon="ant-design:down-outlined" className=' text-white' />
-            </div>
-          </Dropdown>
+              </>
+            )}
+            
+          </>
         )}
 
-        <div className="flex items-center gap-4">
-         <Badge count={unreadNotifications} size="small">
-            <Bell 
-              onClick={() => setNotificationOpen(true)} 
-              className="w-6 h-6 text-white cursor-pointer hover:text-[#FF6B6B]" 
-            />
-          </Badge>
-          <Badge count={favorites.length} size="small">
-            <Heart onClick={() => setWishlistOpen(true)} className="w-6 h-6 text-white cursor-pointer" />
-          </Badge>
 
-          <Badge count={cart.length} size="small">
-            <ShoppingBag
-              className="w-6 h-6 text-white cursor-pointer"
-              onClick={() => setCartOpen(true)}
-            />
-          </Badge>
-        </div>
       </div>
     </div>
   )

@@ -5,30 +5,17 @@ import { SearchBar, ShirtGrid, SortOptions } from '../../../components';
 import { productsAPI } from '../../../utils/api';
 const { Content } = Layout;
 
-const subcategoryRoutes = {
-  shirt: '/men/shirts',
-  pants: '/men/pants',
-  shoes: '/men/shoes',
-};
-
-function getSubcategoryRoute(subcategory) {
-  if (!subcategory) return '/men';
-  const sub = subcategory.toLowerCase();
-  if (sub.includes('shirt')) return subcategoryRoutes.shirt;
-  if (sub.includes('pant')) return subcategoryRoutes.pants;
-  if (sub.includes('shoe')) return subcategoryRoutes.shoes;
-  return '/men';
-}
-
-const MenProducts = () => {
+const MenShoes = () => {
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [feelType, setFeelType] = useState('All');
   const [sortOption, setSortOption] = useState('featured');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(6);
+  const [pageSize] = useState(6); // Show 6 items per page
   const [paginatedProducts, setPaginatedProducts] = useState([]);
   const contentRef = useRef(null);
 
@@ -37,15 +24,12 @@ const MenProducts = () => {
       try {
         setLoading(true);
         const response = await productsAPI.getAll();
-        const all = response.data.filter(p => p.category === 'Men');
-        const shirts = all.filter(p => p.subcategory && p.subcategory.toLowerCase().includes('shirt')).slice(0, 3);
-        const pants = all.filter(p => p.subcategory && p.subcategory.toLowerCase().includes('pant')).slice(0, 3);
-        const shoes = all.filter(p => p.subcategory && p.subcategory.toLowerCase().includes('shoe')).slice(0, 3);
-        // Mix and shuffle
-        let mixed = [...shirts, ...pants, ...shoes];
-        mixed = mixed.sort(() => Math.random() - 0.5);
-        setProducts(mixed);
-        setFilteredProducts(mixed);
+
+        const menShoes = response.data.filter(
+          product => product.category === 'Men' && product.subcategory.toLowerCase().includes('shoes')
+        );
+        setProducts(menShoes);
+        setFilteredProducts(menShoes);
       } catch (error) {
         console.error('Error fetching products:', error);
         message.error('Failed to load products');
@@ -53,11 +37,14 @@ const MenProducts = () => {
         setLoading(false);
       }
     };
+
     fetchProducts();
   }, []);
 
   useEffect(() => {
+    // Filter products based on search query and handFeel
     let filtered = [...products];
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(product =>
@@ -65,9 +52,12 @@ const MenProducts = () => {
         product.description.toLowerCase().includes(query)
       );
     }
+
     if (feelType && feelType !== 'All') {
       filtered = filtered.filter(product => product.handFeel === feelType);
     }
+
+    // Sort products based on selected option
     switch (sortOption) {
       case 'newest':
         filtered = filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -79,19 +69,21 @@ const MenProducts = () => {
         filtered = filtered.sort((a, b) => b.price - a.price);
         break;
       case 'rating':
-        // Optionally implement rating sort
         break;
       default:
         break;
     }
+
     setFilteredProducts(filtered);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page when filters change
   }, [searchQuery, feelType, sortOption, products]);
 
   useEffect(() => {
+    // Calculate pagination
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    setPaginatedProducts(filteredProducts.slice(startIndex, endIndex));
+    const paginatedData = filteredProducts.slice(startIndex, endIndex);
+    setPaginatedProducts(paginatedData);
   }, [filteredProducts, currentPage, pageSize]);
 
   const handlePageChange = (page) => {
@@ -101,10 +93,6 @@ const MenProducts = () => {
     } else {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  };
-
-  const handleProductClick = (product) => {
-    window.location.href = getSubcategoryRoute(product.subcategory);
   };
 
   if (loading) {
@@ -118,6 +106,7 @@ const MenProducts = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <Content ref={contentRef} className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        {/* Breadcrumb */}
         <Breadcrumb
           className="mb-6"
           separator={<ChevronRight size={14} className="text-gray-400" />}
@@ -139,32 +128,42 @@ const MenProducts = () => {
               title: (
                 <div className="flex items-center">
                   <Tag size={14} className="mr-1" />
-                  <span>Featured</span>
+                  <span>Shirts</span>
                 </div>
               )
             }
           ]}
         />
+
+        {/* Page Title */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Men's Featured Products</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Men's Shoes</h1>
           <p className="text-gray-600 mt-2">
-            Explore a mix of top shirts, pants, and shoes for men.
+            Find the perfect shirt for any occasion, from casual to formal.
           </p>
         </div>
+
+        {/* Search & Filter */}
         <SearchBar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           feelType={feelType}
           setFeelType={setFeelType}
         />
+
+        {/* Sort Options */}
         <SortOptions
           sortOption={sortOption}
           setSortOption={setSortOption}
           totalShirts={filteredProducts.length}
         />
+
+        {/* Product Grid */}
         {paginatedProducts.length > 0 ? (
           <>
-            <ShirtGrid productData={paginatedProducts} onClick={handleProductClick} />
+            <ShirtGrid productData={paginatedProducts} />
+            
+            {/* Pagination */}
             <div className="mt-12 flex justify-center">
               <Pagination
                 current={currentPage}
@@ -182,7 +181,7 @@ const MenProducts = () => {
           </>
         ) : (
           <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900">No products found</h3>
+            <h3 className="text-lg font-medium text-gray-900">No shirts found</h3>
             <p className="mt-2 text-gray-500">Try adjusting your search or filter criteria</p>
           </div>
         )}
@@ -191,4 +190,4 @@ const MenProducts = () => {
   );
 };
 
-export default MenProducts;
+export default MenShoes

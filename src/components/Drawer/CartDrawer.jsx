@@ -1,14 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Drawer, Button, InputNumber, message } from 'antd';
 import { Trash2, Minus, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import StoreUse from '../Store/StoreUse';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const CartDrawer = () => {
   const navigate = useNavigate();
-
   const { cart, isCartOpen, setCartOpen, removeFromCart, updateQuantity, getCartTotal } = StoreUse();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/profile', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        setIsAdmin(response.data.profile?.role === 'admin');
+      } catch {
+        setIsAdmin(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  if (isAdmin) return null;
 
   const total = getCartTotal();
 

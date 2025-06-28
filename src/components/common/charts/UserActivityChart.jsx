@@ -1,17 +1,18 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const data = [
-  { day: 'Mon', active: 2400, new: 1200 },
-  { day: 'Tue', active: 3000, new: 1300 },
-  { day: 'Wed', active: 3500, new: 1000 },
-  { day: 'Thu', active: 2800, new: 1400 },
-  { day: 'Fri', active: 3200, new: 1800 },
-  { day: 'Sat', active: 2900, new: 2000 },
-  { day: 'Sun', active: 2500, new: 1700 },
-];
+const UserActivityChart = ({ stats }) => {
+  // Example: If you have daily user activity in stats, use it. Otherwise, fallback to static data.
+  const data = stats && stats.userActivity ? stats.userActivity : [
+    { day: 'Mon', active: 2400, new: 1200 },
+    { day: 'Tue', active: 3000, new: 1300 },
+    { day: 'Wed', active: 3500, new: 1000 },
+    { day: 'Thu', active: 2800, new: 1400 },
+    { day: 'Fri', active: 3200, new: 1800 },
+    { day: 'Sat', active: 2900, new: 2000 },
+    { day: 'Sun', active: 2500, new: 1700 },
+  ];
 
-const UserActivityChart = () => {
   return (
     <div className="h-72">
       <ResponsiveContainer width="100%" height="100%">

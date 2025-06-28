@@ -250,12 +250,14 @@ const CheckoutPage = () => {
                     label="State"
                     rules={[{ required: true, message: 'Required' }]}
                   >
-                    <Select>
-                      <Option value="CA">California</Option>
-                      <Option value="NY">New York</Option>
-                      <Option value="TX">Texas</Option>
-                      <Option value="FL">Florida</Option>
-                      <Option value="IL">Illinois</Option>
+                    <Select showSearch placeholder="Select province" className='state-select' >
+                      <Option value="Punjab">Punjab</Option>
+                      <Option value="Sindh">Sindh</Option>
+                      <Option value="Khyber Pakhtunkhwa">Khyber Pakhtunkhwa</Option>
+                      <Option value="Balochistan">Balochistan</Option>
+                      <Option value="Islamabad Capital Territory">Islamabad Capital Territory</Option>
+                      <Option value="Gilgit-Baltistan">Gilgit-Baltistan</Option>
+                      <Option value="Azad Jammu and Kashmir">Azad Jammu and Kashmir</Option>
                     </Select>
                   </Form.Item>
                   <Form.Item
