@@ -34,7 +34,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <HeroSection handleShopNowClick={handleShopNowClick} />
-      <section ref={categoryRef} className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+      <section ref={categoryRef} className="md:py-16 xs:pt-6 px-4 sm:px-6 lg:px-8 bg-white">
         <Showcase />
       </section>
       <FeaturedMen />

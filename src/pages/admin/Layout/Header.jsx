@@ -1,13 +1,14 @@
 import { Button, Spin } from 'antd'; // Added Spin for loading
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Fixed import
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Menu } from 'lucide-react';
 
-const Header = () => {
+const Header = ({ toggleSidebar }) => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -28,11 +29,20 @@ const Header = () => {
     fetchProfile();
   }, []);
 
+  const getDisplayName = () => {
+    if (!profile) return 'Admin';
+    if (profile.firstName && profile.lastName) return `${profile.firstName} ${profile.lastName}`;
+    return profile.name || 'Admin';
+  };
+
 
 
   return (
-    <div className="flex justify-end items-center h-20 px-8 border-b border-gray-300 bg-white">
-     
+    <div className="flex justify-between md:justify-end items-center h-20 px-8 border-b border-gray-300 bg-white">
+      <div className="md:hidden">
+        <Button onClick={toggleSidebar} icon={<Menu />} />
+      </div>
+      {loading ? <Spin /> : (
         <div className="flex items-center gap-2">
           <div className='w-10 h-10'>
             <img
@@ -48,7 +58,7 @@ const Header = () => {
           </div>
           <div className="flex flex-col">
             <span className="text-[14px] font-medium">
-              {`${profile?.firstName} ${profile?.lastName}` || profile?.name || 'Admin'}
+              {getDisplayName()}
             </span>
             <span className="text-[12px] font-medium text-gray-600">
               {profile?.email || 'No email available'}
@@ -56,7 +66,7 @@ const Header = () => {
           </div>
 
         </div>
-    
+      )}
     </div>
   );
 };

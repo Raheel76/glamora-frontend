@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
           setUserRole(decoded.role); // Assuming JWT contains 'role'
           setUserEmail(decoded.email); // Assuming JWT contains 'email'
         } catch (error) {
+          console.error('Token decoding error:', error);
           setIsAuthenticated(false);
           setUserRole(null);
           setUserEmail(null);

@@ -58,19 +58,22 @@ const FeaturedMen = () => {
     return (
         <>
             <div className="relative">
-                <div className="men-featured">
-                    <img src="/assets/golden-delicious-man-collection-at-lama.webp" alt="" />
+                <div className="men-featured block xs:hidden ">
+                    <img src="/assets/golden-delicious-man-collection-at-lama.webp"  />
                 </div>
-                <div className="absolute bottom-1/3 left-1/2 w-full flex flex-col -translate-x-1/2 text-center">
+                <div className="men-featured h-[60vh]  block md:hidden">
+                    <img src="/assets/new-ss25-man-collection-by-lama.webp" className=' size-full object-cover' />
+                </div>
+                <div className="absolute  md:bottom-1/3 bottom-10 left-1/2 w-full flex flex-col -translate-x-1/2 text-center">
                     <span className='text-2xl font-bold text-white tracking-[6px]'>GOLDEN DELICIOUS</span>
                     <span className='text-2xl  text-white tracking-[6px]'>All Men's Collection</span>
 
-                    <Link to='/men' className=' text-lg font-medium text-[#000000] underline  '>Shop Now</Link>
+                    <Link to='/men' className=' text-lg font-medium md:text-[#000000] text-white underline  '>Shop Now</Link>
                 </div>
             </div>
-            <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
+            <section className="md:py-16 xs:pt-6 px-4 sm:px-6 lg:px-8 bg-gray-50">
                 <div className="max-w-7xl mx-auto">
-                    <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+                    <h2 className="text-3xl font-bold text-center text-gray-900 md:mb-12 mb-4">
                         Featured Men's Products
                     </h2>
                     {loading ? (

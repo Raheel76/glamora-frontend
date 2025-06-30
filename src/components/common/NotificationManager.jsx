@@ -168,7 +168,7 @@ const NotificationManager = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex xs:flex-col xs:gap-3 justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Notification Manager</h2>
           <p className="text-gray-600">Send notifications to customers about their orders</p>

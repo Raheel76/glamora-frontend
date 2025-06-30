@@ -389,7 +389,7 @@ const ProfileCard = () => {
                   {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
                 </div>
 
-                <div className="flex gap-4 pt-4">
+                <div className="flex xs:flex-col gap-4 pt-4">
                   <button
                     type="submit"
                     disabled={loading}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Layout, Breadcrumb, Button, Rate, Radio, Tabs, Divider, Row, Col, Spin, Typography } from 'antd';
 import { ChevronRight, Home, Tag, ShoppingCart, ArrowLeft, Heart } from 'lucide-react';
@@ -13,12 +13,14 @@ import { Modal, Form, Input } from 'antd';
 import 'swiper/css';
 
 import { Autoplay } from 'swiper/modules';
+import { AuthContext } from '../../../routes/AuthProvider';
 
 const { Content } = Layout;
 const { TabPane } = Tabs;
 const { Title } = Typography;
 
 const ProductDetailsPage = () => {
+  const { userRole } = useContext(AuthContext)
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -267,18 +269,19 @@ const ProductDetailsPage = () => {
         </Button>
 
         <Row gutter={[24, 24]}>
-          <Col md={12}>
+        
+          <Col xs={24} md={12}>
             <div className="space-y-4">
-              <Row gutter={[24, 16]}>
-                <Col md={4}>
-                  <div className="grid grid-cols-1 gap-4">
-                    {product.images.map((image, index) => (
+              <Row gutter={[{ xs: 8, sm: 16 }, { xs: 8, sm: 16 }]}>
+                {/* Thumbnail Column */}
+                <Col xs={24} sm={4} md={4} className="flex flex-row md:order-0 xs:order-2 md:flex-col overflow-x-auto md:overflow-x-visible gap-2 md:gap-4">
+                  <div className="flex md:grid md:grid-cols-1 gap-2 md:gap-4">
+                  {product.images.map((image, index) => (
                       <button
                         key={index}
                         onClick={() => setSelectedImage(index)}
-                        className={`aspect-w-1 aspect-h-1 rounded-md h-[120px] overflow-hidden ${
-                          selectedImage === index ? 'ring-2 ring-black' : ''
-                        }`}
+                        className={` flex-shrink-0 aspect-w-1 aspect-h-1 rounded-md h-[120px] overflow-hidden ${selectedImage === index ? 'ring-2 ring-black' : ''
+                          }`}
                       >
                         <img
                           src={`http://localhost:5000${image}`}
@@ -289,8 +292,9 @@ const ProductDetailsPage = () => {
                     ))}
                   </div>
                 </Col>
-                <Col md={20}>
-                  <div className="aspect-w-4 aspect-h-5 w-full h-[658px] bg-gray-100 rounded-lg overflow-hidden">
+                {/* Main Image Column */}
+                <Col xs={24}  md={20}>
+                <div className="aspect-w-4 aspect-h-5 w-full h-[658px] bg-gray-100 rounded-lg overflow-hidden">
                     <img
                       src={`http://localhost:5000${product.images[selectedImage]}`}
                       alt={product.name}
@@ -301,7 +305,8 @@ const ProductDetailsPage = () => {
               </Row>
             </div>
           </Col>
-          <Col md={12}>
+         
+          <Col md={12} xs={24}>
             <div className="space-y-6">
               <div className="flex justify-between items-start">
                 <div>
@@ -318,18 +323,19 @@ const ProductDetailsPage = () => {
                     />
                     <span className="ml-2 text-sm underline text-gray-500">
                       {reviews.length > 0
-                        ? `${(reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)} rating (${
-                            reviews.length
-                          })`
+                        ? `${(reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)} rating (${reviews.length
+                        })`
                         : 'No reviews yet'}
                     </span>
                   </div>
                 </div>
-                <Button
-                  type="text"
-                  icon={<Heart className={isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'} />}
-                  onClick={handleToggleFavorite}
-                />
+                {userRole === 'user' && (
+                  <Button
+                    type="text"
+                    icon={<Heart className={isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'} />}
+                    onClick={handleToggleFavorite}
+                  />
+                )}
               </div>
 
               <div className="text-2xl font-bold text-gray-900">Rs: {product.price}</div>
@@ -353,6 +359,7 @@ const ProductDetailsPage = () => {
                 </Radio.Group>
               </div>
 
+              {userRole === 'user' && (
               <div className="flex gap-4">
                 <Button
                   type="primary"
@@ -374,7 +381,7 @@ const ProductDetailsPage = () => {
                   Buy Now
                 </Button>
               </div>
-
+              )}
               <Divider />
 
               <Tabs defaultActiveKey="1">
@@ -570,9 +577,8 @@ const ProductDetailsPage = () => {
                   {reviews.map((review, idx) => (
                     <div
                       key={review._id}
-                      className={`flex flex-col gap-2${
-                        idx !== reviews.length - 1 ? ' border-b border-gray-200 pb-6 mb-6' : ''
-                      }`}
+                      className={`flex flex-col gap-2${idx !== reviews.length - 1 ? ' border-b border-gray-200 pb-6 mb-6' : ''
+                        }`}
                     >
                       <div className="flex items-center gap-4 mb-2">
                         <img

@@ -8,7 +8,7 @@ const { Footer: AntFooter } = Layout;
 const Footer = () => {
   
   return (
-    <AntFooter className="bg-gray-900 text-white p-0">
+    <AntFooter className="bg-gray-900 text-white lg:p-0 p-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         {/* Newsletter Section */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 mb-12">
@@ -172,7 +172,7 @@ const Footer = () => {
           <Col xs={12} sm={6} lg={6}>
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-white">Connect With Us</h3>
-              <div className="flex gap-4">
+              <div className="flex lg:flex-row flex-wrap gap-4">
                 <a
                   href="https://www.facebook.com/"
                   className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors"

@@ -12,6 +12,7 @@ const subcategoryRoutes = {
 };
 
 function getSubcategoryRoute(subcategory) {
+  
   if (!subcategory) return '/men';
   const sub = subcategory.toLowerCase();
   if (sub.includes('shirt')) return subcategoryRoutes.shirt;

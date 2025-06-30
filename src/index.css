@@ -376,6 +376,10 @@ body::-webkit-scrollbar {
   display: none !important;
 }
 
+/* .mobile-menu-drawer .ant-drawer {
+  display: none !important;
+} */
+
 @media (max-width: 1440px) {
   .modal-scroll {
     height: calc(100vh - 158px);
@@ -415,5 +419,30 @@ body::-webkit-scrollbar {
   .ant-table-thead .center-column th,
   .ant-table-tbody .center-column td {
     text-align: center !important;
+  }
+
+  .hero-img {
+    background-image: url(/assets/lama-retail-summer-sale-on-shirts-for-mn.webp);
+    height: 70vh;
+  }
+
+  .modal-scroll {
+    height: calc(100vh - 390px);
+  }
+
+  /* .ant-drawer {
+    display: block !important;
+  } */
+
+  .ant-drawer-header-title {
+    flex-direction: row-reverse !important;
+  }
+
+  .ant-drawer-content-wrapper {
+    width: 100% !important;
+
+  }
+  .ant-modal-title{
+    font-size: 18px !important;
   }
 }

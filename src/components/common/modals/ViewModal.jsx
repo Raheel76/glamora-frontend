@@ -57,7 +57,7 @@ const ViewModal = ({ visible, product, onCancel }) => {
   return (
     <Modal
       title={<>
-        <div className=' flex items-center   gap-2'>
+        <div className=' flex xs:flex-col xs:items-start items-center   gap-2'>
           <h2 className=" m-0 font-semibold">Product Details:</h2>
           <h6 className=" text-blue-500"> {product.name}</h6>
 
@@ -72,7 +72,7 @@ const ViewModal = ({ visible, product, onCancel }) => {
       className="view-product-modal"
     >
       <Row gutter={[16, 16]} className="mt-3">
-        <Col span={8}>
+        <Col md={8} xs={24}>
           <h3 className="text-lg font-semibold text-[#1677ff] mb-2">Images:</h3>
           <div
              className='modal-scroll'
@@ -99,7 +99,7 @@ const ViewModal = ({ visible, product, onCancel }) => {
             )}
           </div>
         </Col>
-        <Col span={16}>
+        <Col md={16} xs={24}>
           <h3 className="text-lg font-semibold text-[#1677ff] mb-2">Details:</h3>
           <div
             className='modal-scroll'

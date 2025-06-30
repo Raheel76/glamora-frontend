@@ -121,8 +121,8 @@ const OrderTracker = ({ order }) => {
       </Card>
 
       {/* Progress Steps */}
-      <div className="flex gap-5">
-      <div className="bg-white w-1/2 p-6 rounded-lg border">
+      <div className="flex xs:flex-col gap-5">
+      <div className="bg-white md:w-1/2 xs:w-full p-6 rounded-lg border">
         <h4 className="font-semibold mb-4">Order Progress</h4>
         <Steps
           current={currentStep}
@@ -137,7 +137,7 @@ const OrderTracker = ({ order }) => {
       </div>
 
       {/* Detailed Timeline */}
-      <div className="bg-white w-1/2 p-6 rounded-lg border">
+      <div className="bg-white md:w-1/2 xs:w-full p-6 rounded-lg border">
         <h4 className="font-semibold mb-4">Detailed Timeline</h4>
         <Timeline
           items={[

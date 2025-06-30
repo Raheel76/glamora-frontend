@@ -185,7 +185,7 @@ const UserOrdersPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Content ref={contentRef} className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        <div className="flex justify-between items-center mb-8 ">
+        <div className="flex xs:flex-col xs:gap-3  justify-between items-center mb-8 ">
           <div >
             <h1 className="text-3xl font-bold text-gray-900">Order History</h1>
             <p className="text-gray-600 mt-2">Track and manage all your orders</p>
@@ -253,7 +253,7 @@ const UserOrdersPage = () => {
                           <Badge
                             color={getStatusColor(order.status)}
                             text={getStatusText(order.status)}
-                            className="font-medium"
+                            className="font-medium flex items-center"
                           />
                         </div>
 

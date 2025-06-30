@@ -34,7 +34,7 @@ const ShirtCard = ({ products, onClick }) => {
     e.stopPropagation();
     addToCart(products);
     setCartOpen(true);
-   
+
   };
 
   const handleToggleFavorite = () => {
@@ -52,15 +52,17 @@ const ShirtCard = ({ products, onClick }) => {
           className="absolute inset-0 w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500"
         />
 
-        <button
-          onClick={handleToggleFavorite}
-          className="absolute top-2 right-2 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
-        >
-          <Heart
-            size={20}
-            className={isFavorite ? "fill-red-500 text-red-500" : "text-gray-400"}
-          />
-        </button>
+        {userRole === 'user' && (
+          <button
+            onClick={handleToggleFavorite}
+            className="absolute top-2 right-2 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors"
+          >
+            <Heart
+              size={20}
+              className={isFavorite ? "fill-red-500 text-red-500" : "text-gray-400"}
+            />
+          </button>
+        )}
 
         {/* Category badge */}
         <div className="absolute top-2 left-[14%]">
@@ -103,6 +105,7 @@ const ShirtCard = ({ products, onClick }) => {
             <span className="text-lg font-bold text-gray-900">Rs:{price}</span>
           </div>
 
+          
           <div className="flex gap-2">
             <Button
               type="primary"

@@ -88,7 +88,7 @@ const UserWallet = () => {
                 <Wallet /> My Wallet
             </Title>
             <Card className='mb-4'>
-                <div className="flex justify-between items-center">
+                <div className="flex xs:flex-col justify-between items-center">
                     <Text className=' text-2xl !font-bold'>Current Balance</Text>
                     <Title level={3} className="!text-green-600">
                         Rs: {wallet?.balance.toFixed(2) || '0.00'}

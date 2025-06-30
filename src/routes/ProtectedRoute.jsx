@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 const ProtectedRoute = ({ role }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -21,6 +22,7 @@ const ProtectedRoute = ({ role }) => {
         setIsAuthenticated(true);
         setUserRole(response.data.user.role);
       } catch (error) {
+        console.error('Token verification error:', error);
         setIsAuthenticated(false);
         localStorage.removeItem('token');
       }
@@ -39,6 +41,11 @@ const ProtectedRoute = ({ role }) => {
 
   if (role === 'admin' && userRole !== 'admin') {
     return <Navigate to="/" replace />;
+  }
+
+  const restrictedUserPagesForAdmin = ['/checkout', '/order-confirmation', '/my-orders', '/profile', '/wallet'];
+  if (userRole === 'admin' && restrictedUserPagesForAdmin.includes(location.pathname)) {
+    return <Navigate to="/admin" replace />;
   }
   
 

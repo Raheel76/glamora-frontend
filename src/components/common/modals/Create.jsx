@@ -166,7 +166,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
         >
           <div className="modal-scroll pe-2">
             <Row gutter={16}>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="name"
                   label="Product Name"
@@ -175,7 +175,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
                   <Input placeholder="e.g., PARADISE EMBROIDERED PANTS" />
                 </Form.Item>
               </Col>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="sku"
                   label="SKU"
@@ -187,7 +187,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
             </Row>
 
             <Row gutter={16}>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="category"
                   label="Category"
@@ -199,7 +199,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="subcategory"
                   label="Subcategory"
@@ -215,7 +215,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
             </Row>
 
             <Row gutter={16}>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="price"
                   label="Regular Price"
@@ -224,7 +224,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
                   <Input prefix="Rs." type="number" placeholder="e.g., 4950.00" />
                 </Form.Item>
               </Col>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="stock"
                   label="Stock"
@@ -236,7 +236,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
             </Row>
 
             <Row gutter={16}>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="description"
                   label="Description"
@@ -248,7 +248,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
                   />
                 </Form.Item>
               </Col>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="images"
                   label="Images"
@@ -265,7 +265,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
             </Row>
 
             <Row gutter={16}>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="size"
                   label="Size"
@@ -279,7 +279,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="occasion"
                   label="Occasion"
@@ -296,7 +296,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
             </Row>
 
             <Row gutter={16}>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="fitType"
                   label="Fit Type"
@@ -310,7 +310,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="stretch"
                   label="Stretch"
@@ -327,7 +327,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
             </Row>
 
             <Row gutter={16}>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="transparency"
                   label="Transparency"
@@ -341,7 +341,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="handFeel"
                   label="Hand Feel"
@@ -357,7 +357,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
             </Row>
 
             <Row gutter={16}>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="lining"
                   label="Lining"
@@ -370,7 +370,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="material"
                   label="Material"
@@ -382,7 +382,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
             </Row>
 
             <Row gutter={16}>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="designDetails"
                   label="Design Details"
@@ -395,7 +395,7 @@ const CreateModal = ({ onCreate, onUpdate, editProduct, category }) => {
                   />
                 </Form.Item>
               </Col>
-              <Col span={12}>
+              <Col md={12} xs={24}>
                 <Form.Item
                   name="note"
                   label="Note"
